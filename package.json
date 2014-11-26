@@ -1,0 +1,20 @@
+{
+    "name": "smarty4Js",
+    "description": "A JavaScript Template Engine Most Like Smarty",
+    "version": "0.0.1",
+    "contributors": [
+        {
+            "name": "Johnson",
+            "email": "zoumiaojiang@gmail.com"
+        }
+    ],
+    "bin": {
+        "zdp": "./bin/smarty4Js-cli"
+    },
+    "dependencies": {
+        "jison": "~0.4.15",
+        "underscore": "~1.5.2",
+        "uglify-js": "~2.2"
+    },
+    "repository": "git://github.com/zoumiaojiang/smarty4Js"
+}
