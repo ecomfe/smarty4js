@@ -88,9 +88,9 @@ al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
 <t>{any}/{ot}           { 
                             this.popState(); 
                             this.begin('eof'); 
-                            if (yytext.trim().length > 0) { 
+                            //if (yytext.trim().length > 0) { 
                                 return 'TEXT'; 
-                            }
+                            //}
                         }
 <t>{any}/<<EOF>>        {
                             if (yytext.trim().length == 0) {
@@ -120,6 +120,8 @@ al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
 %left '|'
 %left ':'
 %left '`'
+%left ','
+%left '=>'
 %left TEXT
 
 /*----- start smarty grammar -----*/
@@ -267,7 +269,7 @@ for_stmts
         { $$ = { 
             type: 'FOR', 
             from: $3, 
-            item: $5, 
+            item: $5[0], 
             block: $7 
         }; }
     
@@ -310,13 +312,13 @@ while_stmts
 
 attrs_item
     : ID 
-        { $$ = [ { 
+        { $$ = { 
             type: 'ATTR', 
             key: { 
                 type: 'STR', 
                 value: $1 
             } 
-        } ]; }
+        }; }
     | ID '=' expr 
         { $$ = { 
             type: 'ATTR', 
@@ -730,23 +732,42 @@ objkvs
             key: $1, 
             value: $3 
         }]; }
-    | objkvs ',' STR '=>' expr 
+    | objkvs ',' expr '=>' expr 
         { $$ = [].concat($1, { 
             type: 'OBJ', 
-            key: { type: 'STR', value: $3 }, 
+            key: $3, 
+            value: $5 
+        }); }
+    ;
+
+array_item
+    : expr
+        { $$ = $1; }
+    | array_item ',' expr
+        { $$ = [].concat($1, $3); }
+    | array_item '=>' expr,
+        { $$ = { 
+            type: 'OBJ', 
+            key: $1, 
+            value: $3 
+        }; }
+    | array_item ',' expr '=>' expr
+        { $$ = [].concat($1, { 
+            type: 'OBJ', 
+            key: $3, 
             value: $5 
         }); }
     ;
 
 array
-    : '[' params ']' 
+    : '[' ']' 
+        { $$ = {
+            type: 'ARRAY', 
+            items: []
+        }; }
+    | '[' array_item ']' 
         { $$ = { 
             type: 'ARRAY', 
-            items: $2 
-        }; }
-    | '[' objkvs ']' 
-        { $$ = { 
-            type: 'OBJ', 
             items: $2 
         }; }
     ;

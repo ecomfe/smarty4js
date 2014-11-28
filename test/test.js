@@ -40,12 +40,8 @@ s.config({
 });
 
 s.register({
-    'foreach' : function (form, item, index) {
-        alert(1);
-    },
-
-    'append': function (str) {
-        return 'caonidaye';
+    ceil: function (num) {
+        return num;
     }
 });
 

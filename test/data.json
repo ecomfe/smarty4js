@@ -1,29 +1,9 @@
 {
-    "name": "zoumiaojiang",
-    "foo1": 1000,
-    "user": {
-        "zoumiaojiang": {
-            "username": "zoumiaojiang",
-            "age": 23,
-            "sex": "man"
+    "data": {
+        "cars": {
+            "page": 7,
+            "total": 1200,
+            "pageSize": 10
         }
-    },
-    "some": "some body stu123?",
-    "demo": [
-        "hahaha",
-        "sdfj",
-        "hohoho"
-    ],
-    "testObj": {
-        "a": "testa",
-        "b": "testb"
-    },
-    "a": "6",
-    "b": 10,
-
-    "list": [
-        "aaa",
-        "bbb",
-        "ccc"
-    ]
+    }
 }
