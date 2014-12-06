@@ -116,6 +116,7 @@ al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
 %left '*' '/' '%' '^'
 %left '++' '--'
 %left '$'
+%left ID
 %left '.' '[' '->' L '@'
 %left '|'
 %left ':'
@@ -636,13 +637,15 @@ vara_b
             value: $3, 
             opt: $2 
         }); }
-    | vara_b echo_expr_stmt ID
+    | vara_b ID
+        { $$ = [].concat($1,{ 
+            type: 'ID', 
+            value: $2 
+        }); }
+    | vara_b echo_expr_stmt
         { $$ = [].concat($1, { 
             type: 'ECHO', 
             value: $2 
-        }, { 
-            type: 'ID', 
-            value: $3 
         }); }
     ;
 
