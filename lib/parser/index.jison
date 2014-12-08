@@ -527,7 +527,9 @@ expr
             items: [$1, $3], 
             ops: '|' 
         }; }
-    | vara              
+    | vara 
+        { $$ = $1; }             
+    | literals
         { $$ = $1; }
     | echo_expr_stmt    
         { $$ = $1; }
@@ -571,18 +573,15 @@ vara_b
         }; }
     | vara_b '[' expr ']' 
         { $$ = [].concat($1, { 
-            type: 'OBJ', 
+            type: 'E', 
             value: $3, 
             opt: $2, 
             opt1: $4 
         }); }
     | vara_b '[' ID ']' 
         { $$ = [].concat($1, { 
-            type: 'OBJ', 
-            value: { 
-                type: 'ID', 
-                value: $3 
-            }, 
+            type: 'ID', 
+            value: $3, 
             opt: $2, 
             opt1: $4 
         }); }
@@ -614,11 +613,7 @@ vara_b
             value: $3, 
             opt: $2 
         }); }
-    | echo_expr_stmt
-        { $$ = { 
-            type: 'ECHO', 
-            value: $1 
-        }; }
+
     | vara_b '->' expr 
         { $$ = [].concat($1, { 
             type: 'E', 
@@ -637,17 +632,27 @@ vara_b
             value: $3, 
             opt: $2 
         }); }
-    | vara_b ID
-        { $$ = [].concat($1,{ 
-            type: 'ID', 
-            value: $2 
-        }); }
-    | vara_b echo_expr_stmt
-        { $$ = [].concat($1, { 
+    ;
+
+
+vara_e
+    : echo_expr_stmt
+        { $$ = { 
             type: 'ECHO', 
-            value: $2 
+            value: $1 
+        }; }
+    | vara_e ID
+        { $$ = [].concat($1, {
+            type: 'ID',
+            value: $2
+        }); }
+    | vara_e echo_expr_stmt
+        { $$ = [].concat($1, {
+            type: 'ECHO',
+            value: $2
         }); }
     ;
+
 
 vara
     : '$' vara_b  
@@ -655,9 +660,20 @@ vara
             type: 'VAR', 
             value: $2 
         }; }
+    | '$' ID vara_e
+        { $$ = { 
+            type: 'VAR', 
+            value: [].concat({
+                type: 'ID',
+                value: $2
+            }, $3) 
+        }; }
+    | '$' vara_e
+        { $$ = { 
+            type: 'VAR', 
+            value: $2 
+        }; }
     | global_vara
-        { $$ = $1; }
-    | literals 
         { $$ = $1; }
     ;
 

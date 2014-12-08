@@ -54,7 +54,7 @@ Smarty.prototype.complie = function (tpl) {
     var rd = conf.right_delimiter;
     var code = tpl;
 
-    code = code.replace(ld, '{%')
+    code = code.replace(ld, '{%') // todo: new RegExp
              .replace(rd, '%}') + ld + '*' + this.id + '*' + rd;
     this.ast = parser.parse(code);
 
