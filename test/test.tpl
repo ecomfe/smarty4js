@@ -1,6 +1,9 @@
-
-{%foreach from=$list item=info key=indexkey name='fuck'%}
-    {%$info->name|capitalize%}, {%$info.age|cat:'s'%}, {%$info.url%}, {%$keyindex%}
-{%/foreach%}
-
-{%time()%}
+{%strip%}
+{%function a%}
+    {%while $s > 0%}
+        {%$s%}, 
+        {%$s--%}
+    {%/while%}
+{%/function%}
+{%a s=100%}
+{%/strip%}

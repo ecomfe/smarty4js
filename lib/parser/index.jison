@@ -320,6 +320,14 @@ attrs_item
                 value: $1 
             } 
         }; }
+    | vara
+        { $$ = { 
+            type: 'ATTR', 
+            key: { 
+                type: 'VAR', 
+                value: $1 
+            } 
+        }; }
     | ID '=' expr 
         { $$ = { 
             type: 'ATTR', 
@@ -473,31 +481,55 @@ expr
         }; }
     | expr '++'         
         { $$ = { 
-            type: 'E', 
-            items: [$1], 
-            ops: '++', 
-            r: 'r' 
+            type: 'ASSIGN', 
+            key: $1, 
+            value: {
+                type: 'E',
+                items: [$1, {
+                    type: 'NUM',
+                    value: 1
+                }],
+                ops: '+'
+            }
         }; }
     | expr '--'         
         { $$ = { 
-            type: 'E', 
-            items: [$1], 
-            ops: '--', 
-            r: 'r' 
+            type: 'ASSIGN', 
+            key: $1, 
+            value: {
+                type: 'E',
+                items: [$1, {
+                    type: 'NUM',
+                    value: 1
+                }],
+                ops: '-'
+            }
         }; }
     | '++' expr         
         { $$ = { 
-            type: 'E', 
-            items: [$2], 
-            ops: '++', 
-            r: 'l' 
+            type: 'ASSIGN', 
+            key: $1, 
+            value: {
+                type: 'E',
+                items: [$1, {
+                    type: 'NUM',
+                    value: 1
+                }],
+                ops: '+'
+            }
         }; }
     | '--' expr         
         { $$ = { 
-            type: 'E', 
-            items: [$2], 
-            ops: '--', 
-            r: 'l' 
+            type: 'ASSIGN', 
+            key: $1, 
+            value: {
+                type: 'E',
+                items: [$1, {
+                    type: 'NUM',
+                    value: 1
+                }],
+                ops: '+'
+            }
         }; }
     | '!' expr          
         { $$ = { 

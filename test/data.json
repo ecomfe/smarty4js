@@ -1,23 +1,9 @@
 {
-    "list": [
-        {
-            "name": "zoumiaojiang",
-            "age": 12,
-            "url": "www.baidu.com"
-        },
-        {
-            "name": "quyatong",
-            "age": 45,
-            "url": "www.sina.com.cn"
-        },
-        {
-            "name": "wanglei",
-            "age": 243,
-            "url": "www.zhihu.com"
-        }
-    ],
-
-    "a": "s",
-    "b": "s",
-    "sdds": "sssssss"
+  "list": [
+    {
+      "a": 1,
+      "b": 2
+    }
+  ],
+  "s": 2
 }

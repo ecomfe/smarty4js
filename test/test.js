@@ -42,6 +42,9 @@ s.config({
 s.register({
     ceil: function (num) {
         return num;
+    },
+    highlight: function (str) {
+        return str;
     }
 });
 
