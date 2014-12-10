@@ -48,10 +48,10 @@ s.register({
     }
 });
 
-var complier = s.complie(code);
-var jsTpl = complier.getJsTpl();
+var compiler = s.compile(code);
+var jsTpl = compiler.getJsTpl();
 fs.writeFileSync('/Users/zoumiaojiang/Desktop/a.js', jsTpl, {encoding:'utf8'});
-var html = complier.render(JSON.parse(data));
+var html = compiler.render(JSON.parse(data));
 
 //var html = new Function('data', 'engine', jsTpl)(JSON.parse(data), s);
 console.log(html);

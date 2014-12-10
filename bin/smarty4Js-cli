@@ -1,0 +1,111 @@
+#!/usr/bin/env node
+
+var path = require('path');
+var fs = require('fs');
+
+var smarty4Js = require('../index');
+var utils = require('../lib/utils');
+
+var args = process.argv.slice(2);
+var cwd = process.cwd();
+var ret = '';
+var smarty = new smarty4Js();
+
+var argvs = { tpl: [] };
+var options = {};
+
+if (args.length == 1 && (args[0] == '-v' || args[0] == '--version')) {
+    console.log('version: ' + JSON.parse(
+        fs.readFileSync( 
+            require('path').resolve(__dirname, '../package.json'), 'UTF-8'
+        )
+    ).version);
+}
+else {
+    args.forEach(function (argv) {
+        if (argv.charAt(0) == '-') {
+            argv = argv.slice(1);
+            argv.split('').forEach(function (opt) {
+                options[opt] = true;
+            });
+        }
+        else if (argv.indexOf('.tpl') > -1) {
+            argvs['tpl'].push(argv);
+        }
+        else if (argv.indexOf('.json') > -1) {
+            argvs['data'] = argv;
+        }
+    });
+
+
+    if (argvs.tpl.length) {
+        argvs.tpl.forEach(function (tplPath) {
+            if (fs.existsSync(tplPath)) {
+                dataHander(tplPath);
+            }
+            else {
+                var obsTplPath = path.resolve(cwd, tplPath);
+                if (fs.existsSync(obsTplPath)) {
+                    dataHander(obsTplPath);
+                }
+                else {
+                    console.log('Not found `' + tplPath + '`');
+                }
+            }
+        });
+    }
+    else {
+        console.log('No template!');
+    }
+}
+
+
+function dataHander(tplPath) {
+    var fileName = path.basename(tplPath).replace(/\..*/, '');
+    var dataPath = argvs.data;
+    if (dataPath) {
+        if (fs.existsSync(dataPath)) {
+            renderData(tplPath, dataPath);
+        }
+        else {
+            var obsTplPath = path.resolve(cwd, dataPath);
+            if (fs.existsSync(obsTplPath)) {
+                renderData(tplPath, dataPath);
+            }
+            else {
+                console.log('Not found `' + dataPath + '`');
+            }
+        }
+    }
+    else {
+        renderJsTpl(tplPath);
+    }
+}
+
+
+function renderJsTpl(tplPath) {
+    var ret = smarty.compile(fs.readFileSync(tplPath, 'utf8')).getJsTpl();
+    var fileName = path.basename(tplPath).replace(/\..*/, '');
+
+    if (!options.o) {
+        fs.writeFileSync(fileName + '.tpl.js', ret, { encodeing: 'utf8' });
+    }
+    else {
+        console.log(ret);
+    }
+}
+
+
+function renderData(tplPath, dataPath) {
+    var fileName = path.basename(tplPath).replace(/\..*/, '');
+    var tpl = fs.readFileSync(tplPath, 'utf8');
+    var data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+    var ret = smarty.render(tpl, data);
+
+    if (!options.o) {
+        fs.writeFileSync(fileName + '.tpl.html', ret, { encodeing: 'utf8' });
+    }
+    else {
+        console.log(ret);
+    }
+}

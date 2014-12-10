@@ -5,7 +5,7 @@
  */
 
 var parser = require('./lib/parser/index');
-var Complier = require('./lib/Complier');
+var Compiler = require('./lib/Compiler');
 var Renderer = require('./lib/Renderer');
 var func = require('./lib/func');
 var utils = require('./lib/utils');
@@ -18,17 +18,11 @@ var utils = require('./lib/utils');
 function Smarty() {
     this.id = '__smarty__' + utils.GUID();
     this.func = func;
-    this.complier = new Complier(this);
+    this.compiler = new Compiler(this);
     this.renderer = new Renderer(this);
     this.conf = {
-        caching: true,
         left_delimiter: '{%',
-        right_delimiter: '%}',
-        template_dir:'./templates',
-        compile_dir: './templates_c',
-        config_dir: './configs',
-        plugins_dir: './plugins',
-        cache_dir:'./cache'
+        right_delimiter: '%}'
     }
 
     this.config.apply(this, arguments);
@@ -48,7 +42,7 @@ Smarty.prototype.config = function (conf) {
  * 
  * @return {Object}     a smarty Compiler object, have `render` mathod
  */
-Smarty.prototype.complie = function (tpl) {
+Smarty.prototype.compile = function (tpl) {
     var conf = this.conf;
     var ld = conf.left_delimiter;
     var rd = conf.right_delimiter;
@@ -58,7 +52,7 @@ Smarty.prototype.complie = function (tpl) {
              .replace(rd, '%}') + ld + '*' + this.id + '*' + rd;
     this.ast = parser.parse(code);
 
-    return this.complier;
+    return this.compiler;
 };
 
 /**
@@ -70,7 +64,7 @@ Smarty.prototype.complie = function (tpl) {
  */
 Smarty.prototype.render = function (tpl, data) {
     var code = tpl;
-    return this.complie(code).render(data);
+    return this.compile(code).render(data);
 };
 
 /**
@@ -86,7 +80,7 @@ Smarty.prototype.register = function (funcObj) {
             this.func[p] = funcObj[p];
         }
     }
-}
+};
 
 
 

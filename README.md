@@ -3,31 +3,32 @@ Smarty4Js (Smarty For Javascript)
 
 ## what?
 
-- A Javascript template engin most like smarty 
-- A more simple tool to write a template
-- A easy way to use
+- Javascript template engine
+- Support smarty template grammar
+- Used in nodejs
+- Simple and powerful way to creat and render a template
 
 ## why?
 
-- Because don't want to have two or more template in your project.
-- Because you are a lazy coder who don't want to write more template code.
-- Because deep love smarty -- :P
-
+- Powerful
+- Don't want to have two or more template in your project.
+- Deep love smarty
 
 ## when?
 
 - When your Synchronous template is Smarty ,and your ajax template will use the same template.
-- When you want write smarty template with JavaScript anywhere.
-- When you want put a lot of logic in JavaScript template
+- When you want to write smarty template with JavaScript anywhere.
+- When you want to put a lot of logic in JavaScript template
 - When you like smarty very much
     
 ## how?
 
+- single
 - with grunt
 - with gulp
 - with edp
-- with itself
-- with all subject
+- with all nodejs web subject
+
 
 ### useage
 
@@ -38,28 +39,34 @@ Smarty4Js (Smarty For Javascript)
 
 #### grammar
 ```
-    all of smarty
+    most like smarty template grammar
 ```
 
 #### command line
  ```bash
-    smarty4Js smartyTemplateString  jsonDataString  outputFilePath  
-    smarty4Js smartyTemplateFilePath jsonDataFilePath outputFilePath
+    smarty4Js a.tpl [a.json] [asset_dir] [-o]
 ``` 
 
-#### use in nodejs
+#### used in nodejs
 ```javascript
-    /*get Smarty class*/
+    // get Smarty class
     var Smarty = require('smarty4Js');
 
-    /*create a smarty object*/
-    var smarty = new Smarty();
+    // create a smarty object
+    var s = new Smarty();
 
-    /*create smarty ast*/
-    var ast = smarty.compile(smartyCode);
+    // get compiler
+    var compiler = s.compile(tpl);
 
-    /*render smarty with data*/
-    var html = ast.render(data);
-    var html = smarty.render(ast, data);
+    // get ast
+    var ast = s.ast;
+
+    // get js code
+    var js = compiler.getJsTpl();
+
+    // render smarty with data (3 methods)
+    var html = compiler.render(data);
+    var html = s.render(tpl, data);
+    var html = new Function('data', js)(data);
 ```
 

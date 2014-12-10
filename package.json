@@ -9,11 +9,12 @@
         }
     ],
     "bin": {
-        "zdp": "./bin/smarty4Js-cli"
+        "smarty4Js": "./bin/smarty4Js-cli"
+    },
+    "devDependencies": {
+        "jison": "~0.4.15"
     },
     "dependencies": {
-        "jison": "~0.4.15",
-        "underscore": "~1.5.2",
         "uglify-js": "~2.2"
     },
     "repository": "git://github.com/zoumiaojiang/smarty4Js"
