@@ -47,6 +47,19 @@ Smarty4Js (Smarty For Javascript)
     smarty4Js a.tpl [a.json] [asset_dir] [-o]
 ``` 
 
+- if have json data, return html(`demo.tpl.html`), if no json data, return jsTpl(`demo.tpl.js`)
+- jsTpl is closure, hava a `render` method, you can use it like
+
+```javascript
+    
+    // amd and cmd
+    var template = require('demo.tpl');
+    template.render(data);
+
+    // also could by <script>
+
+```
+
 #### used in nodejs
 ```javascript
     // get Smarty class
