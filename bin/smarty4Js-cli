@@ -14,6 +14,15 @@ var smarty = new smarty4Js();
 var argvs = { tpl: [] };
 var options = {};
 
+function getObsPath(p) {
+    if (p.charAt(0) == '/') {
+        return p;
+    }
+    else {
+        return path.resolve(cwd, p);
+    }
+}
+
 if (args.length == 1 && (args[0] == '-v' || args[0] == '--version')) {
     console.log('version: ' + JSON.parse(
         fs.readFileSync( 
@@ -40,17 +49,12 @@ else {
 
     if (argvs.tpl.length) {
         argvs.tpl.forEach(function (tplPath) {
-            if (fs.existsSync(tplPath)) {
-                dataHander(tplPath);
+            var obsTplPath = getObsPath(tplPath);
+            if (fs.existsSync(obsTplPath)) {
+                dataHandler(obsTplPath);
             }
             else {
-                var obsTplPath = path.resolve(cwd, tplPath);
-                if (fs.existsSync(obsTplPath)) {
-                    dataHander(obsTplPath);
-                }
-                else {
-                    console.log('Not found `' + tplPath + '`');
-                }
+                console.log('Not found `' + tplPath + '`');
             }
         });
     }
@@ -60,21 +64,18 @@ else {
 }
 
 
-function dataHander(tplPath) {
+function dataHandler(tplPath) {
+    
     var fileName = path.basename(tplPath).replace(/\..*/, '');
     var dataPath = argvs.data;
+
     if (dataPath) {
-        if (fs.existsSync(dataPath)) {
+        var obsTplPath = getObsPath(dataPath);
+        if (fs.existsSync(obsTplPath)) {
             renderData(tplPath, dataPath);
         }
         else {
-            var obsTplPath = path.resolve(cwd, dataPath);
-            if (fs.existsSync(obsTplPath)) {
-                renderData(tplPath, dataPath);
-            }
-            else {
-                console.log('Not found `' + dataPath + '`');
-            }
+            console.log('Not found `' + dataPath + '`');
         }
     }
     else {
@@ -86,9 +87,10 @@ function dataHander(tplPath) {
 function renderJsTpl(tplPath) {
     var ret = addClosure(smarty.compile(fs.readFileSync(tplPath, 'utf8')).getJsTpl());
     var fileName = path.basename(tplPath).replace(/\..*/, '');
-
+    var dirname = path.dirname(tplPath);
+    var assetPath = path.resolve(dirname, fileName + '.tpl.js');
     if (!options.o) {
-        fs.writeFileSync(fileName + '.tpl.js', ret, { encodeing: 'utf8' });
+        fs.writeFileSync(assetPath, ret, { encodeing: 'utf8' });
     }
     else {
         console.log(ret);
@@ -98,12 +100,14 @@ function renderJsTpl(tplPath) {
 
 function renderData(tplPath, dataPath) {
     var fileName = path.basename(tplPath).replace(/\..*/, '');
+    var dirname = path.dirname(tplPath);
+    var assetPath = path.resolve(dirname, fileName + '.tpl.html');
     var tpl = fs.readFileSync(tplPath, 'utf8');
     var data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
     var ret = smarty.render(tpl, data);
 
     if (!options.o) {
-        fs.writeFileSync(fileName + '.tpl.html', ret, { encodeing: 'utf8' });
+        fs.writeFileSync(assetPath, ret, { encodeing: 'utf8' });
     }
     else {
         console.log(ret);
