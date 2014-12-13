@@ -53,7 +53,7 @@ var jsTpl = compiler.getJsTpl();
 fs.writeFileSync('/Users/zoumiaojiang/Desktop/a.js', jsTpl, {encoding:'utf8'});
 var html = compiler.render(JSON.parse(data));
 
-//var html = new Function('data', 'engine', jsTpl)(JSON.parse(data), s);
+//var html = (new Function('return ' + jsTpl)()).render(JSON.parse(data));
 console.log(html);
 
 

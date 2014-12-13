@@ -85,9 +85,10 @@ function dataHandler(tplPath) {
 
 
 function renderJsTpl(tplPath) {
-    var ret = addClosure(smarty.compile(fs.readFileSync(tplPath, 'utf8')).getJsTpl());
-    var fileName = path.basename(tplPath).replace(/\..*/, '');
     var dirname = path.dirname(tplPath);
+    smarty.dirname = dirname;
+    var ret = smarty.compile(fs.readFileSync(tplPath, 'utf8')).getJsTpl();
+    var fileName = path.basename(tplPath).replace(/\..*/, '');
     var assetPath = path.resolve(dirname, fileName + '.tpl.js');
     if (!options.o) {
         fs.writeFileSync(assetPath, ret, { encodeing: 'utf8' });
@@ -112,20 +113,4 @@ function renderData(tplPath, dataPath) {
     else {
         console.log(ret);
     }
-}
-
-/**
- * [addClosure description]
- * @param {[type]} jsTpl [description]
- */
-function addClosure(jsTpl) {
-      return ''
-        + '(function(){'
-        +     'var __ret={'
-        +         'render:function(data){\n' + jsTpl + '\n}'
-        +     '};\n'
-        +     'if (typeof exports=="object" && typeof module=="object"){exports=module.exports=__ret;}\n'
-        +     'else if (typeof define=="function" && define.amd){define(__ret);}\n'
-        +     'else {return __ret;}'
-        + '})();'
 }
