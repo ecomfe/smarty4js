@@ -1,4 +1,11 @@
 {
   "a": "a",
-  "b": "b"
+  "b": "b",
+  "data": {
+    "cars": {
+        "total": 120,
+        "page": 3,
+        "pageSize": 10
+    }
+  }
 }

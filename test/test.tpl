@@ -1,5 +1,5 @@
-{%strip%}
-{%include file="a.tpl"%}
-{%a%}
-{%$b%}
-{%/strip%}
+{%extends file="./a.tpl"%}
+
+{%block name="testa"%}
+    subTpl block 'tasta'
+{%/block%}

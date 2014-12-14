@@ -1,4 +1,5 @@
-{%function a%}
-{%include file="b.tpl"%}
 {%$a%}
-{%/function%}
+
+{%block name="testa"%}
+    master block 'testa'
+{%/block%}

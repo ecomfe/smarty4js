@@ -27,7 +27,7 @@ kw      (
             'elseif'|'if'|'foreach'|'else'|'foreachesle'|
             'section'|'sectionelse'|'for'|'to'|'while'|'as'|
             'true'|'false'|'null'|'function'|'strip'|
-            'block'|'smarty'|'assign'|'literal'
+            'block'|'smarty'|'literal'
         )
 multi_op  ('>='|'<='|'==='|'=='|'!='|'&&'|'||'|'->'|'=>'|'++'|'--')
 al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
@@ -313,6 +313,14 @@ while_stmts
 
 attrs_item
     : ID 
+        { $$ = { 
+            type: 'ATTR', 
+            key: { 
+                type: 'STR', 
+                value: $1 
+            } 
+        }; }
+    | STR
         { $$ = { 
             type: 'ATTR', 
             key: { 
@@ -767,12 +775,6 @@ assign_stmts
             type: 'ASSIGN', 
             key: $2, 
             value: $4 
-        }; }
-    | L assign attrs R
-        { $$ = { 
-            type: 'FUNC', 
-            name: $2, 
-            attrs: $3 
         }; }
     ;
 
