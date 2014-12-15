@@ -1,5 +1,5 @@
-{%extends file="./a.tpl"%}
-
-{%block name="testa"%}
-    subTpl block 'tasta'
-{%/block%}
+{%for $a = 1 to 9%}
+    {%for $b = 1 to 9%}
+        {%$a%} * {%$b%} = {%$a * $b%} 
+    {%/for%}
+{%/for%}
