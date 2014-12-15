@@ -1,5 +1,10 @@
-{%for $a = 1 to 9%}
-    {%for $b = 1 to 9%}
-        {%$a%} * {%$b%} = {%$a * $b%} 
-    {%/for%}
-{%/for%}
+{%extends file="a.tpl"%}
+
+{%block name="title" append%}
+    welcome to here
+{%/block%}
+
+
+{%block name="body"%}
+    ```qqq
+{%/block%}
