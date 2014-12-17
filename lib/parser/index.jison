@@ -256,7 +256,6 @@ strip_stmts
         }; }
     ;
 
-
 for_stmts
     : L foreach vara as vara R stmts L '/' foreach R 
         { $$ = { 
@@ -266,12 +265,52 @@ for_stmts
             block: $7 
         }; }
 
+    | L foreach array as vara R stmts L '/' foreach R 
+        { $$ = { 
+            type: 'FOR', 
+            from: $3, 
+            item: $5, 
+            block: $7 
+        }; }
+
+    | L foreach ID '(' params ')' as vara R stmts L '/' foreach R 
+        { $$ = { 
+            type: 'FOR', 
+            from: { 
+                type:'FUNC', 
+                name: $3,  
+                params: $5 
+            }, 
+            item: $8, 
+            block: $10 
+        }; }
+
     | L foreach vara as objkvs R stmts L '/' foreach R  
         { $$ = { 
             type: 'FOR', 
             from: $3, 
             item: $5[0], 
             block: $7 
+        }; }
+
+    | L foreach array as objkvs R stmts L '/' foreach R  
+        { $$ = { 
+            type: 'FOR', 
+            from: $3, 
+            item: $5[0], 
+            block: $7 
+        }; }
+
+    | L foreach ID '(' params ')' as objkvs R stmts L '/' foreach R  
+        { $$ = { 
+            type: 'FOR', 
+            from: { 
+                type:'FUNC', 
+                name: $3,  
+                params: $5 
+            }, 
+            item: $8[0], 
+            block: $10 
         }; }
     
     | L foreach attrs R stmts L '/' foreach R  
@@ -573,7 +612,7 @@ expr
         { $$ = $1; }
     | echo_expr_stmt    
         { $$ = $1; }
-    ;
+    ; 
 
 pipe_func
     : pipe_func ':' expr 

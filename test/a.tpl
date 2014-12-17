@@ -1,13 +1,13 @@
+{%strip%}
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{%block name="title"%} [test title] {%/block%}</title>
+    <title>{%block name="title"%}百度财富{%/block%}</title>
 </head>
 <body>
 {%block name="body"%}
-    [test body]
-    {%block name="icon"%}
-    {%/block%}
+    <div>no body</div>
 {%/block%}
 </body>
 </html>
+{%/strip%}

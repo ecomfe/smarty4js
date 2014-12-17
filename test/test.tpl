@@ -1,10 +1,4 @@
-{%extends file="a.tpl"%}
 
-{%block name="title" append%}
-    welcome to here
-{%/block%}
-
-
-{%block name="body"%}
-    ```qqq
-{%/block%}
+{%foreach range('A', Z) as $l%}
+    {%$l%}
+{%/foreach%}
