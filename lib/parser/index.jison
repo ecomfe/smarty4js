@@ -26,7 +26,7 @@ simple_op  [\[\]\(\)\.\$@\+\-\*\/%\^=<>\!:\|,#`]
 kw      (
             'elseif'|'if'|'foreach'|'else'|'foreachesle'|
             'section'|'sectionelse'|'for'|'to'|'while'|'as'|
-            'true'|'false'|'null'|'function'|'strip'|
+            'true'|'false'|'null'|'function'|'strip'|'capture'|
             'block'|'smarty'|'literal'
         )
 multi_op  ('>='|'<='|'==='|'=='|'!='|'&&'|'||'|'->'|'=>'|'++'|'--')
@@ -187,6 +187,8 @@ blocks
         { $$ = $1; }
     | literal_stmts
         { $$ = $1; }
+    | capture_stmts
+        { $$ = $1; }
     ;
 
 echo_expr_stmt
@@ -221,6 +223,16 @@ function_stmts
 
 block_stmts
     : L block attrs R stmts L '/' block R
+        { $$ = { 
+            type: 'FUNC',
+            name: $2, 
+            attrs: $3 , 
+            block: $5 
+        }; }
+    ;
+
+capture_stmts
+    : L capture attrs R stmts L '/' capture R
         { $$ = { 
             type: 'FUNC',
             name: $2, 

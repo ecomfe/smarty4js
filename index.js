@@ -19,11 +19,11 @@ var utils = require('./lib/utils');
 function defineCode(code, conf) {
     var ld = conf.left_delimiter;
     var rd = conf.right_delimiter;
-    return code.replace(ld, '{%') // todo: new RegExp
-             .replace(rd, '%}')
-             .replace(/\\\"/g, '__QD') // replace \" in string ""
-             .replace(/\\\'/g, '__QS') // replace \' in string ''
-     + ld + '*smarty4Js*' + rd;
+    return (code + ld + '*smarty4Js*' + rd)
+        .replace(new RegExp(utils.regEscape(ld), 'g'), '{%')
+        .replace(new RegExp(utils.regEscape(rd), 'g'), '%}')
+        .replace(/\\\"/g, '__QD') // replace \" in string ""
+        .replace(/\\\'/g, '__QS') // replace \' in string ''
 }
 
 /**
