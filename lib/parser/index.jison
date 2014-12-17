@@ -815,6 +815,15 @@ assign_stmts
             key: $2, 
             value: $4 
         }; }
+    | L vara '=' ID R 
+        { $$ = { 
+            type: 'ASSIGN', 
+            key: $2, 
+            value: {
+                type: 'STR',
+                value: $4
+            } 
+        }; }
     ;
 
 objkvs

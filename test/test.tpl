@@ -1,5 +1,9 @@
-{%$list = [1,2,3,4,5]%}
+{%*include file="../../../work/views/loan/index.tpl"*%}
 
-{%if $list|@count > 3%}
-    aaa
-{%/if%}
+{%strip%}
+    <p>what the fuck</p>
+    <a href="http://www.baidu.com">  操你大爷  </a>
+    <div>
+        <p>ashdasjkdjkasl</p>
+    </div>
+{%/strip%}

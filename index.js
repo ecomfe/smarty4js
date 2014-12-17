@@ -22,8 +22,8 @@ function defineCode(code, conf) {
     return code.replace(ld, '{%') // todo: new RegExp
              .replace(rd, '%}')
              .replace(/\\\"/g, '__QD') // replace \" in string ""
-             .replace(/\\\'/g, '__QD') // replace \' in string ''
-     + ld + '*' + this.id + '*' + rd;
+             .replace(/\\\'/g, '__QS') // replace \' in string ''
+     + ld + '*smarty4Js*' + rd;
 }
 
 /**
