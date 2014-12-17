@@ -11,6 +11,22 @@ var func = require('./lib/func');
 var utils = require('./lib/utils');
 
 /**
+ * pre define template code
+ * @param  {string} code template code
+ * @param  {Object} conf smarty config
+ * @return {string}      code of after pre define
+ */
+function defineCode(code, conf) {
+    var ld = conf.left_delimiter;
+    var rd = conf.right_delimiter;
+    return code.replace(ld, '{%') // todo: new RegExp
+             .replace(rd, '%}')
+             .replace(/\\\"/g, '__QD') // replace \" in string ""
+             .replace(/\\\'/g, '__QD') // replace \' in string ''
+     + ld + '*' + this.id + '*' + rd;
+}
+
+/**
  * @constructor
  *
  * Smarty Class
@@ -44,13 +60,7 @@ Smarty.prototype.config = function (conf) {
  */
 Smarty.prototype.compile = function (tpl) {
     var conf = this.conf;
-    var ld = conf.left_delimiter;
-    var rd = conf.right_delimiter;
-    var code = tpl;
-
-    code = code.replace(ld, '{%') // todo: new RegExp
-             .replace(rd, '%}') + ld + '*' + this.id + '*' + rd;
-    this.ast = parser.parse(code);
+    this.ast = parser.parse(defineCode(tpl, conf));
 
     return this.compiler;
 };
@@ -63,8 +73,7 @@ Smarty.prototype.compile = function (tpl) {
  * @return {string}      html string
  */
 Smarty.prototype.render = function (tpl, data) {
-    var code = tpl;
-    return this.compile(code).render(data);
+    return this.compile(tpl).render(data);
 };
 
 /**

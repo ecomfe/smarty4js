@@ -603,7 +603,7 @@ expr
     | expr '|' '@' pipe_func
         { $$ = { 
             type: 'E', 
-            items: [$1, $3], 
+            items: [$1, $4], 
             ops: '|' 
         }; }
     | vara 
