@@ -34,7 +34,7 @@ Smarty4Js (Smarty For Javascript)
 
 #### install
 ```bash
-    [sudo] npm install -g smarty4Js
+    [sudo] npm install -g smarty4Js [not publish yet, you can `git clone + npm link` now]
 ```
 
 #### grammar
@@ -80,6 +80,6 @@ Smarty4Js (Smarty For Javascript)
     // render smarty with data (3 methods)
     var html = compiler.render(data);
     var html = s.render(tpl, data);
-    var html = new Function('data', js)(data);
+    var html = (new Function('return ' + js)()).render(data);
 ```
 
