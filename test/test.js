@@ -51,10 +51,10 @@ s.register({
 var compiler = s.compile(code);
 var jsTpl = compiler.getJsTpl();
 fs.writeFileSync('/Users/zoumiaojiang/Desktop/a.js', jsTpl, {encoding:'utf8'});
-var html = compiler.render(JSON.parse(data));
+//var html = compiler.render(JSON.parse(data));
 
-//var html = (new Function('return ' + jsTpl)()).render(JSON.parse(data));
-console.log(html);
+var html = (new Function('return ' + jsTpl)()).render('target1', JSON.parse(data));
+console.log('------------\nhtml: \n', html);
 
 
 

@@ -540,55 +540,31 @@ expr
         }; }
     | expr '++'         
         { $$ = { 
-            type: 'ASSIGN', 
-            key: $1, 
-            value: {
-                type: 'E',
-                items: [$1, {
-                    type: 'NUM',
-                    value: 1
-                }],
-                ops: '+'
-            }
+            type: 'AUTO', 
+            items: $1, 
+            ops: '++', 
+            r: 'r' 
         }; }
     | expr '--'         
         { $$ = { 
-            type: 'ASSIGN', 
-            key: $1, 
-            value: {
-                type: 'E',
-                items: [$1, {
-                    type: 'NUM',
-                    value: 1
-                }],
-                ops: '-'
-            }
+            type: 'AUTO', 
+            items: $1, 
+            ops: '--', 
+            r: 'r' 
         }; }
     | '++' expr         
         { $$ = { 
-            type: 'ASSIGN', 
-            key: $1, 
-            value: {
-                type: 'E',
-                items: [$1, {
-                    type: 'NUM',
-                    value: 1
-                }],
-                ops: '+'
-            }
+            type: 'AUTO', 
+            items: $2, 
+            ops: '++', 
+            r: 'l' 
         }; }
     | '--' expr         
         { $$ = { 
-            type: 'ASSIGN', 
-            key: $1, 
-            value: {
-                type: 'E',
-                items: [$1, {
-                    type: 'NUM',
-                    value: 1
-                }],
-                ops: '+'
-            }
+            type: 'AUTO', 
+            items: $2, 
+            ops: '--', 
+            r: 'l' 
         }; }
     | '!' expr          
         { $$ = { 
