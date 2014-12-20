@@ -6,8 +6,8 @@ function console_log(obj) {
     return JSON.stringify(obj, null, 4);
 }
 
-var code = fs.readFileSync('./test.tpl', 'utf8');
-var data = fs.readFileSync('./data.json', 'utf8');
+var code = fs.readFileSync('../../smarty4Js-test/demo.tpl', 'utf8');
+var data = fs.readFileSync('../../smarty4Js-test/data.json', 'utf8');
 
 
 

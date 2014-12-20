@@ -15,7 +15,6 @@
         "jison": "~0.4.15"
     },
     "dependencies": {
-        "uglify-js": "~2.2"
     },
     "repository": "git://github.com/zoumiaojiang/smarty4Js"
 }
