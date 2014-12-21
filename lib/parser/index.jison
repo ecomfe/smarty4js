@@ -27,7 +27,7 @@ kw      (
             'elseif'|'if'|'foreach'|'else'|'foreachesle'|
             'section'|'sectionelse'|'for'|'to'|'while'|'as'|
             'true'|'false'|'null'|'function'|'strip'|'capture'|
-            'block'|'smarty'|'literal'
+            'block'|'literal'
         )
 multi_op  ('>='|'<='|'==='|'=='|'!='|'&&'|'||'|'->'|'=>'|'++'|'--')
 al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
@@ -35,7 +35,7 @@ al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
 %{
     /*JavaScript util package here*/
 
-    parser.operator_sync = function (str) {
+    parser.operator_sync = function () {
         var opsMap = {
             'ne': '!=',
             'neq': '!=',
@@ -51,7 +51,7 @@ al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
             'not': '!',
             '===': '=='
         };
-        return opsMap[str] ? opsMap[str] : str;
+        return opsMap[yytext] ? opsMap[yytext] : yytext;
     };
 
     parser.cutStr = function () {
@@ -61,50 +61,51 @@ al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
 
 
 /*----- start lexical grammar -----*/
-%x t v iv eof c
+%x t v iv eof c g
 %%
-<v,iv,t,eof>{ot}/'*'    { this.begin('c'); return 'L'; }
-<eof>{ot}               { this.popState(); this.begin('v'); return 'L'; }
-<v,iv>{ot}              { this.begin('iv'); return 'L'; }
-<v,iv,c>{ct}            {
-                            var s = this.popState();
-                            if ('c' == s) {
-                                s = this.popState();
+<v,iv,t,eof>{ot}/'*'        { this.begin('c'); return 'L'; }
+<v,iv,t,eof>{ot}/'$smarty'  { this.begin('g'); return 'L'; }
+<eof>{ot}                   { this.popState(); this.begin('v'); return 'L'; }
+<v,iv>{ot}                  { this.begin('iv'); return 'L'; }
+<v,iv,c,g>{ct}              {
+                                var s = this.popState();
+                                if ('c' == s) {
+                                    s = this.popState();
+                                }
+                                if ('g' == s) {
+                                    s = this.popState();
+                                }
+                                if ('v' == s) {
+                                    this.begin('t');
+                                }
+                                return 'R';
                             }
-                            if ('v' == s) {
-                                this.begin('t');
+<v,iv>{ws}                  ;
+<c>'*'{any}'*'/{ct}         { return 'COMMENTS'; }
+<v,iv>{kw}/{nln}            { return yytext; }
+<v,iv>{num}                 { return 'NUM'; }
+<v,iv>{str}                 { parser.cutStr(); return 'STR'; }
+<v,iv>{multi_op}            { return parser.operator_sync(); }
+<v,iv>{al_op}/{nln}         { return parser.operator_sync(); }
+<v,iv>{simple_op}           { return yytext; }
+<v,iv>{id}                  { return 'ID'; }
+
+<g>'$'[\w\.]+/{ct}          { return 'G'; }
+
+<t>{any}/{ot}               { this.popState(); this.begin('eof'); return 'TEXT'; }
+<t>{any}/<<EOF>>            {
+                                if (yytext.trim().length == 0) {
+                                    return 'EOF';
+                                }
+                                else {
+                                    this.popState();
+                                    this.begin('eof');
+                                    return 'TEXT';
+                                } 
                             }
-                            return 'R';
-                        }
-<v,iv>{ws}              ;
-<c>'*'{any}'*'/{ct}     { return 'COMMENTS'; }
-<v,iv>{kw}/{nln}        { return yytext; }
-<v,iv>{num}             { return 'NUM'; }
-<v,iv>{str}             { parser.cutStr(); return 'STR'; }
-<v,iv>{multi_op}        { return parser.operator_sync(yytext); }
-<v,iv>{al_op}/{nln}     { return parser.operator_sync(yytext); }
-<v,iv>{simple_op}       { return yytext; }
-<v,iv>{id}              { return 'ID'; }
-<t>{any}/{ot}           { 
-                            this.popState(); 
-                            this.begin('eof'); 
-                            //if (yytext.trim().length > 0) { 
-                                return 'TEXT'; 
-                            //}
-                        }
-<t>{any}/<<EOF>>        {
-                            if (yytext.trim().length == 0) {
-                                return 'EOF';
-                            }
-                            else {
-                                this.popState();
-                                this.begin('eof');
-                                return 'TEXT';
-                            } 
-                        }
-<eof><<EOF>>            { this.popState(); return 'EOF'; }
-<INITIAL><<EOF>>        { return 'EOF'; }
-<INITIAL>               { this.begin('t');}
+<eof><<EOF>>                { this.popState(); return 'EOF'; }
+<INITIAL><<EOF>>            { return 'EOF'; }
+<INITIAL>                   { this.begin('t');}
 
 /lex
 
@@ -285,16 +286,12 @@ for_stmts
             block: $7 
         }; }
 
-    | L foreach ID '(' params ')' as vara R stmts L '/' foreach R 
+    | L foreach php_func as vara R stmts L '/' foreach R 
         { $$ = { 
             type: 'FOR', 
-            from: { 
-                type:'FUNC', 
-                name: $3,  
-                params: $5 
-            }, 
-            item: $8, 
-            block: $10 
+            from: $3, 
+            item: $5, 
+            block: $7 
         }; }
 
     | L foreach vara as objkvs R stmts L '/' foreach R  
@@ -313,16 +310,12 @@ for_stmts
             block: $7 
         }; }
 
-    | L foreach ID '(' params ')' as objkvs R stmts L '/' foreach R  
+    | L foreach php_func as objkvs R stmts L '/' foreach R  
         { $$ = { 
             type: 'FOR', 
-            from: { 
-                type:'FUNC', 
-                name: $3,  
-                params: $5 
-            }, 
-            item: $8[0], 
-            block: $10 
+            from: $3, 
+            item: $5[0], 
+            block: $7 
         }; }
     
     | L foreach attrs R stmts L '/' foreach R  
@@ -454,128 +447,128 @@ elseif_stmts
     ;
 
 expr
-    : expr '+' expr     
+    : expr '+' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '+' 
         }; }
-    | expr '-' expr     
+    | expr '-' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '-' 
         }; }
-    | expr '*' expr     
+    | expr '*' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '*' 
         }; }
-    | expr '/' expr     
+    | expr '/' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '/' 
         }; }
-    | expr '%' expr     
+    | expr '%' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '%' 
         }; }
-    | expr '^' expr     
+    | expr '^' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '^' 
         }; }
-    | expr '&&' expr    
+    | expr '&&' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '&&' 
         }; }
-    | expr '||' expr    
+    | expr '||' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '||' 
         }; }
-    | expr '>' expr     
+    | expr '>' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '>' 
         }; }
-    | expr '<' expr     
+    | expr '<' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '<' 
         }; }
-    | expr '>=' expr    
+    | expr '>=' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '>=' 
         }; }
-    | expr '<=' expr    
-        { $$ = { 
+    | expr '<=' expr
+        { $$ = {
             type: 'E', 
             items: [$1, $3], 
             ops: '<=' 
         }; }
-    | expr '==' expr    
+    | expr '==' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '==' 
         }; }
-    | expr '!=' expr    
+    | expr '!=' expr
         { $$ = { 
             type: 'E', 
             items: [$1, $3], 
             ops: '!=' 
         }; }
-    | expr '++'         
+    | expr '++'
         { $$ = { 
             type: 'AUTO', 
             items: $1, 
             ops: '++', 
             r: 'r' 
         }; }
-    | expr '--'         
+    | expr '--'
         { $$ = { 
             type: 'AUTO', 
             items: $1, 
             ops: '--', 
             r: 'r' 
         }; }
-    | '++' expr         
+    | '++' expr
         { $$ = { 
             type: 'AUTO', 
             items: $2, 
             ops: '++', 
             r: 'l' 
         }; }
-    | '--' expr         
+    | '--' expr
         { $$ = { 
             type: 'AUTO', 
             items: $2, 
             ops: '--', 
             r: 'l' 
         }; }
-    | '!' expr          
+    | '!' expr
         { $$ = { 
             type: 'E', 
             items: [$2], 
             ops: '!', 
             r: 'l' 
         }; }
-    | '(' expr ')'      
+    | '(' expr ')'
         { $$ = $2; }
-    | '-' expr          
+    | '-' expr
         { $$ = { 
             type: 'E', 
             items: [$2], 
@@ -595,10 +588,10 @@ expr
             ops: '|' 
         }; }
     | vara 
-        { $$ = $1; }             
+        { $$ = $1; }
     | literals
         { $$ = $1; }
-    | echo_expr_stmt    
+    | echo_expr_stmt
         { $$ = $1; }
     ; 
 
@@ -740,34 +733,11 @@ vara
             type: 'VAR', 
             value: $2 
         }; }
-    | global_vara
-        { $$ = $1; }
-    ;
-
-global_vara
-    : '$' smarty 
-        { $$ = { 
-            type: 'GLOBAL', 
-            value: $2
+    | G
+        { $$ = {
+            type: 'GLOBAL',
+            value: $1
         }; }
-    | '$' smarty '.' foreach
-        { $$ = [].concat({ 
-            type: 'GLOBAL', 
-            value: $2 
-        }, { 
-            type: 'GLOBAL', 
-            value: $4, 
-            opt: $3 
-        }); }
-    | '$' smarty '.' section
-        { $$ = [].concat({ 
-            type: 'GLOBAL', 
-            value: $2 
-        }, { 
-            type: 'GLOBAL', 
-            value: $4, 
-            opt: $3 
-        }); }
     ;
 
 literals
@@ -777,14 +747,25 @@ literals
         { $$ = $1; }
     | bool 
         { $$ = $1; }
-    | ID '(' params ')' 
+    | php_func
+        { $$ = $1; }
+    | array 
+        { $$ = $1; }
+    ;
+
+php_func
+    : ID '(' params ')' 
         { $$ = { 
             type:'FUNC', 
             name: $1,  
             params: $3 
         }; }
-    | array 
-        { $$ = $1; }
+    | ID '(' ')'
+        { $$ = { 
+            type:'FUNC', 
+            name: $1,  
+            params: [] 
+        }; }
     ;
 
 params
@@ -792,8 +773,16 @@ params
         { $$ = [$1]; }
     | params ',' expr 
         { $$ = [].concat($1, $3); }
-    | 
-        { $$ = []; }
+    | ID
+        { $$ = [{
+            type: 'STR',
+            value: $1
+        }]; }
+    | params ',' ID
+        { $$ = [].concat($1, {
+            type: 'STR',
+            value: $3
+        }); }
     ;
 
 assign_stmts

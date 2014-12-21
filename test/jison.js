@@ -7,7 +7,7 @@ var fs = require('fs');
 var util = require('util');
 var jison = require('jison');
 
-var code = fs.readFileSync('./test.tpl', 'utf8') + '{*Smarty 4 JavaScript*}';
+var code = fs.readFileSync('../../smarty4Js-test/demo.tpl', 'utf8') + '{*Smarty 4 JavaScript*}';
 var grammar = fs.readFileSync('../lib/parser/index.jison', 'utf8');
 
 
