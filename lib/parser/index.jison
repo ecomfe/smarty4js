@@ -63,49 +63,44 @@ al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
 /*----- start lexical grammar -----*/
 %x t v iv eof c g
 %%
-<v,iv,t,eof>{ot}/'*'        { this.begin('c'); return 'L'; }
-<v,iv,t,eof>{ot}/'$smarty'  { this.begin('g'); return 'L'; }
-<eof>{ot}                   { this.popState(); this.begin('v'); return 'L'; }
-<v,iv>{ot}                  { this.begin('iv'); return 'L'; }
-<v,iv,c,g>{ct}              {
-                                var s = this.popState();
-                                if ('c' == s) {
-                                    s = this.popState();
+<v,iv,t,eof>{ot}/'*'            { this.begin('c'); return 'L'; }
+<v,iv>'$smarty'((\.[\w]+)+)?    {return 'G';}
+<eof>{ot}                       { this.popState(); this.begin('v'); return 'L'; }
+<v,iv>{ot}                      { this.begin('iv'); return 'L'; }
+<v,iv,c,g>{ct}                  {
+                                    var s = this.popState();
+                                    if ('c' == s) {
+                                        s = this.popState();
+                                    }
+                                    if ('v' == s) {
+                                        this.begin('t');
+                                    }
+                                    return 'R';
                                 }
-                                if ('g' == s) {
-                                    s = this.popState();
-                                }
-                                if ('v' == s) {
-                                    this.begin('t');
-                                }
-                                return 'R';
-                            }
-<v,iv>{ws}                  ;
-<c>'*'{any}'*'/{ct}         { return 'COMMENTS'; }
-<v,iv>{kw}/{nln}            { return yytext; }
-<v,iv>{num}                 { return 'NUM'; }
-<v,iv>{str}                 { parser.cutStr(); return 'STR'; }
-<v,iv>{multi_op}            { return parser.operator_sync(); }
-<v,iv>{al_op}/{nln}         { return parser.operator_sync(); }
-<v,iv>{simple_op}           { return yytext; }
-<v,iv>{id}                  { return 'ID'; }
+<v,iv>{ws}                      ;
+<c>'*'{any}'*'/{ct}             { return 'COMMENTS'; }
+<v,iv>{kw}/{nln}                { return yytext; }
+<v,iv>{num}                     { return 'NUM'; }
+<v,iv>{str}                     { parser.cutStr(); return 'STR'; }
+<v,iv>{multi_op}                { return parser.operator_sync(); }
+<v,iv>{al_op}/{nln}             { return parser.operator_sync(); }
+<v,iv>{simple_op}               { return yytext; }
+<v,iv>{id}                      { return 'ID'; }
 
-<g>'$'[\w\.]+/{ct}          { return 'G'; }
-
-<t>{any}/{ot}               { this.popState(); this.begin('eof'); return 'TEXT'; }
-<t>{any}/<<EOF>>            {
-                                if (yytext.trim().length == 0) {
-                                    return 'EOF';
+<t>{any}/{ot}                   { this.popState(); this.begin('eof'); return 'TEXT'; }
+<t>{any}/<<EOF>>                {
+                                    if (yytext.trim().length == 0) {
+                                        return 'EOF';
+                                    }
+                                    else {
+                                        this.popState();
+                                        this.begin('eof');
+                                        return 'TEXT';
+                                    } 
                                 }
-                                else {
-                                    this.popState();
-                                    this.begin('eof');
-                                    return 'TEXT';
-                                } 
-                            }
-<eof><<EOF>>                { this.popState(); return 'EOF'; }
-<INITIAL><<EOF>>            { return 'EOF'; }
-<INITIAL>                   { this.begin('t');}
+<eof><<EOF>>                    { this.popState(); return 'EOF'; }
+<INITIAL><<EOF>>                { return 'EOF'; }
+<INITIAL>                       { this.begin('t');}
 
 /lex
 
