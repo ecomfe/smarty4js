@@ -7,6 +7,7 @@
 var parser = require('./lib/parser/index');
 var Compiler = require('./lib/Compiler');
 var Renderer = require('./lib/Renderer');
+var phpfunc = require('./lib/phpfunc');
 var func = require('./lib/func');
 var utils = require('./lib/utils');
 
@@ -33,6 +34,7 @@ function defineCode(code, conf) {
  */
 function Smarty() {
     this.id = '__smarty__' + utils.GUID();
+    this.phpfunc = phpfunc;
     this.func = func;
     this.compiler = new Compiler(this);
     this.renderer = new Renderer(this);
