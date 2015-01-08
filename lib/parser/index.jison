@@ -620,6 +620,19 @@ pipe_func
         }; }
     ;
 
+section_p
+    : ID
+        { $$ = [{
+            type: 'STR',
+            value: $1
+        }]; }
+    | section_p '.' ID
+        { $$ = [].concat($1, {
+            type: 'STR',
+            value: $3
+        }); }
+    ;
+
 vara_b
     : ID 
         { $$ = { 
@@ -633,9 +646,9 @@ vara_b
             opt: $2, 
             opt1: $4 
         }); }
-    | vara_b '[' ID ']' 
+    | vara_b '[' section_p ']' 
         { $$ = [].concat($1, { 
-            type: 'ID', 
+            type: 'SEC', 
             value: $3, 
             opt: $2, 
             opt1: $4 
