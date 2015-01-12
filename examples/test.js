@@ -6,30 +6,8 @@ function console_log(obj) {
     return JSON.stringify(obj, null, 4);
 }
 
-var code = fs.readFileSync('../../smarty4Js-test/demo.tpl', 'utf8');
-var data = fs.readFileSync('../../smarty4Js-test/data.json', 'utf8');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+var code = fs.readFileSync('./test.tpl', 'utf8');
+var data = fs.readFileSync('./data.json', 'utf8');
 
 
 
@@ -48,72 +26,16 @@ s.register({
     }
 });
 
+
 var compiler = s.compile(code);
+fs.writeFileSync(
+    '/Users/zoumiaojiang/Desktop/smarty.json', 
+    console_log(s.ast), 
+    {encoding: 'utf8'}
+);
 var jsTpl = compiler.getJsTpl();
 fs.writeFileSync('/Users/zoumiaojiang/Desktop/a.js', jsTpl, {encoding:'utf8'});
 //var html = compiler.render(JSON.parse(data));
 
 var html = (new Function('return ' + jsTpl)()).render(JSON.parse(data));
 console.log('------------\nhtml: \n', html);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-fs.writeFileSync(
-    '/Users/zoumiaojiang/Desktop/smarty.json', 
-    console_log(s.ast), 
-    {encoding: 'utf8'}
-);

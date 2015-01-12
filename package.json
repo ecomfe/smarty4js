@@ -1,10 +1,13 @@
 {
     "name": "smarty4Js",
     "description": "A JavaScript Template Engine Most Like Smarty",
-    "version": "0.0.1",
+    "version": "0.1.0",
+    "keywords": [
+        "smarty js template"
+    ],
     "contributors": [
         {
-            "name": "Johnson",
+            "name": "johnson",
             "email": "zoumiaojiang@gmail.com"
         }
     ],
@@ -12,9 +15,8 @@
         "smarty4Js": "./bin/smarty4Js-cli"
     },
     "devDependencies": {
-        "jison": "~0.4.15"
-    },
-    "dependencies": {
+        "jison": "~0.4.15",
+        "mocha": ">=1.7.2"
     },
     "repository": "git://github.com/zoumiaojiang/smarty4Js"
 }

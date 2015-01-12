@@ -1,6 +1,6 @@
 /**
  * @file smarty4Js/lib/parser/index.jison
- * @author Johnson zoumiaojiang@gmail.com
+ * @author johnson [zoumiaojiang@gmail.com]
  * @date 2014-11-11
  */
 
@@ -24,10 +24,10 @@ letter  [a-zA-Z_]
 nln     [^a-zA-Z0-9_]
 simple_op  [\[\]\(\)\.\$@\+\-\*\/%\^=<>\!:\|,#`]
 kw      (
-            'elseif'|'if'|'foreach'|'else'|'foreachesle'|
+            'elseif'|'if'|'foreach'|'else'|'foreachelse'|
             'section'|'sectionelse'|'for'|'to'|'while'|'as'|
             'true'|'false'|'null'|'function'|'strip'|'capture'|
-            'block'|'literal'
+            'block'|'literal'|'nocache'
         )
 multi_op  ('>='|'<='|'==='|'=='|'!='|'&&'|'||'|'->'|'=>'|'++'|'--')
 al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
@@ -175,6 +175,8 @@ blocks
         { $$ = $1; }
     | for_stmts 
         { $$ = $1; }
+    | single_for
+        { $$ = $1; }
     | while_stmts
         { $$ = $1; }
     | section_stmts
@@ -184,6 +186,8 @@ blocks
     | literal_stmts
         { $$ = $1; }
     | capture_stmts
+        { $$ = $1; }
+    | nocache_stmts
         { $$ = $1; }
     ;
 
@@ -239,6 +243,16 @@ capture_stmts
 
 literal_stmts
     : L literal R stmts L '/' literal R 
+        { $$ = { 
+            type: 'FUNC', 
+            name: $2, 
+            attrs: [], 
+            block: $4 
+        }; }
+    ;
+
+nocache_stmts
+    : L nocache R stmts L '/' nocache R 
         { $$ = { 
             type: 'FUNC', 
             name: $2, 
@@ -320,14 +334,27 @@ for_stmts
             attrs: $3 , 
             block: $5 
         }; }
-    
-    | L for vara '=' expr to expr R stmts L '/' for R 
+
+    | foreachelse_stmts
+        { $$ = $1; }
+    ;
+
+single_for
+    : L for vara '=' expr to expr R stmts L '/' for R 
         { $$ = { 
             type: 'FOR', 
             item: $3, 
             start: $5, 
             end: $7, 
             block: $9 
+        }; }
+    ;
+
+foreachelse_stmts
+    : L foreachelse R stmts
+        { $$ = {
+            type: 'FORELSE',
+            block: $4
         }; }
     ;
 
@@ -338,6 +365,16 @@ section_stmts
             name: $2, 
             attrs: $3, 
             block: $5 
+        }; }
+    | section_else_stmts
+        { $$ = $1; }
+    ;
+
+section_else_stmts
+    : L sectionelse R stmts
+        { $$ = {
+            type: 'SECELSE',
+            block: $4
         }; }
     ;
 

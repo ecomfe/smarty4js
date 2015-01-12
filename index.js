@@ -1,6 +1,6 @@
 /**
  * @file Smarty4Js
- * @author johnson(zoumiaojiang@gmail.com)
+ * @author johnson [zoumiaojiang@gmail.com]
  * @date  2014-11-13
  */
 
@@ -24,31 +24,29 @@ function defineCode(code, conf) {
         .replace(new RegExp(utils.regEscape(ld), 'g'), '{%')
         .replace(new RegExp(utils.regEscape(rd), 'g'), '%}')
         .replace(/\\\"/g, '__QD') // replace \" in string ""
-        .replace(/\\\'/g, '__QS') // replace \' in string ''
+        .replace(/\\\'/g, '__QS'); // replace \' in string ''
 }
 
 /**
  * @constructor
- *
- * Smarty Class
  */
 function Smarty() {
-    this.id = '__smarty__' + utils.GUID();
+    this.id = '__smarty__' + utils.getGUID();
     this.phpfunc = phpfunc;
     this.func = func;
     this.compiler = new Compiler(this);
     this.renderer = new Renderer(this);
     this.conf = {
-        left_delimiter: '{%',
-        right_delimiter: '%}'
-    }
+        'left_delimiter': '{%',
+        'right_delimiter': '%}'
+    };
 
     this.config.apply(this, arguments);
-};
+}
 
 /**
  * smarty config
- * @param  {object} conf config options
+ * @param  {Object} conf config options
  */
 Smarty.prototype.config = function (conf) {
     this.conf = utils.extend(this.conf, conf);
@@ -57,8 +55,7 @@ Smarty.prototype.config = function (conf) {
 /**
  * compile the smarty template code
  * @param  {string} tpl smarty template code/file path
- * 
- * @return {Object}     a smarty Compiler object, have `render` mathod
+ * @return {Object}     smarty Compiler object, have `render` mathod
  */
 Smarty.prototype.compile = function (tpl) {
     var conf = this.conf;
@@ -71,7 +68,6 @@ Smarty.prototype.compile = function (tpl) {
  * render tpl with json data
  * @param  {string} tpl  template code/file path
  * @param  {Object} data json data
- * 
  * @return {string}      html string
  */
 Smarty.prototype.render = function (tpl, data) {
@@ -80,10 +76,7 @@ Smarty.prototype.render = function (tpl, data) {
 
 /**
  * user-defined function regiester in smarty
- * @param  {string}    funcName  function name
- * @param  {Function}  func      a function
- * 
- * @return {Object}              function Object
+ * @param  {Object}    funcObj  function Object
  */
 Smarty.prototype.register = function (funcObj) {
     for (var p in funcObj) {
@@ -93,6 +86,16 @@ Smarty.prototype.register = function (funcObj) {
     }
 };
 
-
+/**
+ * php plugin regiester in smarty
+ * @param  {Object}    plugins   plugin's Object
+ */
+Smarty.prototype.addPlugin = function (plugins) {
+    for (var p in plugins) {
+        if (plugins.hasOwnProperty(p)) {
+            this.phpfunc[p] = plugins[p];
+        }
+    }
+};
 
 module.exports = Smarty;
