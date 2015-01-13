@@ -3,109 +3,161 @@
 var path = require('path');
 var fs = require('fs');
 
-var smarty4Js = require('../index');
+var Smarty = require('../index');
 var utils = require('../lib/utils');
 
 var args = process.argv.slice(2);
 var cwd = process.cwd();
-var ret = '';
-var smarty = new smarty4Js();
-
-var argvs = { tpl: [] };
-var options = {};
+var command = {};
+var cinfo = {};
+var smarty = new Smarty();
 
 function getObsPath(p) {
     return path.resolve(cwd, p);
 }
 
-if (args.length == 1 && (args[0] == '-v' || args[0] == '--version')) {
-    console.log('version: ' + JSON.parse(
-        fs.readFileSync( 
-            require('path').resolve(__dirname, '../package.json'), 'UTF-8'
-        )
-    ).version);
-}
-else {
-    args.forEach(function (argv) {
-        if (argv.charAt(0) == '-') {
-            argv = argv.slice(1);
-            argv.split('').forEach(function (opt) {
-                options[opt] = true;
-            });
-        }
-        else if (argv.indexOf('.tpl') > -1) {
-            argvs['tpl'].push(argv);
-        }
-        else if (argv.indexOf('.json') > -1) {
-            argvs['data'] = argv;
-        }
-    });
-
-
-    if (argvs.tpl.length) {
-        argvs.tpl.forEach(function (tplPath) {
-            var obsTplPath = getObsPath(tplPath);
-            if (fs.existsSync(obsTplPath)) {
-                dataHandler(obsTplPath);
-            }
-            else {
-                console.log('Not found `' + tplPath + '`');
-            }
-        });
-    }
-    else {
-        console.log('No template!');
-    }
-}
-
-
-function dataHandler(tplPath) {
-    
-    var fileName = path.basename(tplPath).replace(/\..*/, '');
-    var dataPath = argvs.data;
-
-    if (dataPath) {
-        var obsTplPath = getObsPath(dataPath);
-        if (fs.existsSync(obsTplPath)) {
-            renderData(tplPath, dataPath);
+function parseCommand (arr) {
+    var options = {};
+    var argv = [];
+    arr.forEach(function (item) {
+        if (item.charAt(0) === '-') {
+            var tmp = item.split('=');
+            options[tmp[0]] = tmp[1] || true;
         }
         else {
-            console.log('Not found `' + dataPath + '`');
+            argv.push(item);
+        }
+    });
+    return {
+        options: options,
+        argv: argv
+    }
+}
+
+function smartyCompile(tplPaths, conf, options) {
+    tplPaths.forEach(function (tplPath) {
+        var ret = '';
+        var dirname = path.dirname(tplPath);
+        var fileName = path.basename(tplPath).replace(/\..*/, '');
+        var assetPath = path.resolve((options.assetPath || dirname), fileName + '.tpl.js');
+
+        smarty.dirname = dirname;
+        smarty.config(conf.config || {});
+        smarty.addPlugin(conf.plugins || {});
+        smarty.register(conf.funcs || {});
+
+        ret = smarty.compile(fs.readFileSync(tplPath, 'utf8')).getJsTpl();
+
+        fs.writeFileSync(
+            assetPath,
+            ret,
+            {encodeing: 'utf8'}
+        );
+    });
+
+}
+
+function smartyRender(tplPaths, data, conf, options) {
+    // smartyCompile(tplPaths, conf, options);
+    tplPaths.forEach(function (tplPath) {
+        var ret = '';
+        var dirname = path.dirname(tplPath);
+        var fileName = path.basename(tplPath).replace(/\..*/, '');
+        var assetPath = path.resolve((options.assetPath || dirname), fileName + '.tpl');
+        ret = smarty.compile(fs.readFileSync(tplPath, 'utf8')).render(data);
+
+        fs.writeFileSync(
+            assetPath + '.html',
+            ret,
+            {encodeing: 'utf8'}
+        );
+    });
+}
+
+function getCommandInfo(command) {
+    var op = command.options;
+    var tpls = command.argv;
+    var conf = {};
+    var opConf = op['-c'] || op['--config'];
+    var opData = op['-d'] || op['--data'];
+    var tplPath = [];
+    var confPath = opConf ? getObsPath(opConf) : '';
+    var dataPath = opData ? getObsPath(opData) : '';
+    var assetPath = getObsPath(op['-o'] || op['--output'] || '.' + path.sep);
+    var data = {};
+
+    tpls.forEach(function (tpl) {
+        var tmp = getObsPath(tpl);
+        if (!fs.existsSync(tmp)) {
+            console.log('Not fount template `' + tmp + '`');
+            process.exit(1);
+        }
+        tplPath.push(tmp);
+    });
+    if (!fs.existsSync(assetPath)) {
+        console.log('Not fount dir `' + assetPath + '`');
+        process.exit(1);
+    }
+    if (dataPath) {
+        if (!fs.existsSync(dataPath)) {
+            console.log('Not found data file`' + dataPath + '`');
+            process.exit(1);
+        }
+        try {
+            data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+        }
+        catch (e) {
+            console.log('Make sure data file`' + dataPath + '` is right.');
+            process.exit(1);
         }
     }
-    else {
-        renderJsTpl(tplPath);
+    if (confPath) {
+        if (!fs.existsSync(confPath)) {
+            console.log('Not found config file`' + confPath + '`');
+            process.exit(1);
+        }
+        try {
+            conf = require(confPath);
+        }
+        catch (e) {
+            console.log('Make sure config file`' + confPath + '` is right.');
+            process.exit(1);
+        }
     }
+    return {
+        tplPath: tplPath,
+        conf: conf,
+        assetPath: assetPath,
+        data: data
+    };
 }
 
-
-function renderJsTpl(tplPath) {
-    var dirname = path.dirname(tplPath);
-    smarty.dirname = dirname;
-    var ret = smarty.compile(fs.readFileSync(tplPath, 'utf8')).getJsTpl();
-    var fileName = path.basename(tplPath).replace(/\..*/, '');
-    var assetPath = path.resolve(dirname, fileName + '.tpl.js');
-    if (!options.o) {
-        fs.writeFileSync(assetPath, ret, { encodeing: 'utf8' });
-    }
-    else {
-        console.log(ret);
-    }
+if (args.length === 1 && (args[0] === '-v' || args[0] === '--version')) {
+    console.log('version: ' + JSON.parse(fs.readFileSync(
+        path.resolve(__dirname, '..'  + path.sep + 'package.json'),
+        'UTF-8'
+    )).version);
 }
-
-
-function renderData(tplPath, dataPath) {
-    var fileName = path.basename(tplPath).replace(/\..*/, '');
-    var dirname = path.dirname(tplPath);
-    var assetPath = path.resolve(dirname, fileName + '.tpl.html');
-    var tpl = fs.readFileSync(tplPath, 'utf8');
-    var data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-    var ret = smarty.render(tpl, data);
-
-    if (!options.o) {
-        fs.writeFileSync(assetPath, ret, { encodeing: 'utf8' });
+else {
+    if (args[0] === 'compile') { // smarty4Js compile
+        cinfo = getCommandInfo(parseCommand(args.slice(1)));
+        smartyCompile(
+            cinfo.tplPath,
+            cinfo.conf,
+            {assetPath: cinfo.assetPath}
+        );
+    }
+    else if (args[0] === 'render') { // smarty4Js render
+        cinfo = getCommandInfo(parseCommand(args.slice(1)));
+        smartyRender(
+            cinfo.tplPath,
+            cinfo.data,
+            cinfo.conf,
+            {assetPath: cinfo.assetPath}
+        );
     }
     else {
-        console.log(ret);
+        console.log('No command `' + args[0] + '`');
+        process.exit(1);
     }
 }

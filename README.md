@@ -44,7 +44,20 @@ Smarty4Js (Smarty For Javascript)
 
 #### command line
  ```bash
-    smarty4Js a.tpl [a.json] [asset_dir] [-o]
+    // get tpl.js
+    smarty4Js compile a.tpl [b.tpl ...] [-c|--config=confPath -o|--output=outputPath]
+        -c | --config: Use user-define config file
+        -o | --output: Specify a destination directory
+
+    // get tpl.html
+    smarty4Js render a.tpl [b.tpl ...] -d|--data=jsonFilePath [-c|--config=confPath -o|--output=outputPath]
+        -d | --data  : json data file path for render
+        -c | --config: Use user-define config file
+        -o | --output: Specify a destination directory
+
+    // show current version
+    smarty4Js -v|--version
+
 ``` 
 
 - if have json data, return html(`demo.tpl.html`), if no json data, return jsTpl(`demo.tpl.js`)

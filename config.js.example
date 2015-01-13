@@ -1,0 +1,16 @@
+
+
+module.exports = {
+    config: {
+        'left_delimiter': '{%',
+        'right_delimiter': '%}'
+    },
+    plugins: { // add php function
+        testphp: function (str) {
+            return str + '--demo--';
+        }
+    },
+    funcs: { // add smarty function
+
+    }
+};

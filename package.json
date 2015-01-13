@@ -3,7 +3,17 @@
     "description": "A JavaScript Template Engine Most Like Smarty",
     "version": "0.1.0",
     "keywords": [
-        "smarty js template"
+        "smarty",
+        "smartyjs",
+        "template",
+        "tpl",
+        "smarty js",
+        "smarty.js",
+        "smarty4Js",
+        "parser",
+        "preprocessor",
+        "smarty compiler",
+        "compile smarty"
     ],
     "contributors": [
         {
@@ -11,12 +21,15 @@
             "email": "zoumiaojiang@gmail.com"
         }
     ],
+    "bugs": {
+        "url": "https://github.com/zoumiaojiang/smarty4Js/issues"
+    },
     "bin": {
         "smarty4Js": "./bin/smarty4Js-cli"
     },
+    "main": "index",
     "devDependencies": {
-        "jison": "~0.4.15",
-        "mocha": ">=1.7.2"
+        "jison": "~0.4.15"
     },
     "repository": "git://github.com/zoumiaojiang/smarty4Js"
 }

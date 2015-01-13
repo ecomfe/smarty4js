@@ -5,3 +5,7 @@ examples
 .gitignore
 .rvmrc
 Makefile
+*.example
+.fecsignore
+.fecsrc
+config.js.example
