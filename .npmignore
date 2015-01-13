@@ -9,3 +9,4 @@ Makefile
 .fecsignore
 .fecsrc
 config.js.example
+npm-debug.log

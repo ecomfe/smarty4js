@@ -6,3 +6,4 @@ examples/*.tpl.html
 examples/test.tpl
 examples/test.js
 .rvmrc
+npm-debug.log

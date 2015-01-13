@@ -34,7 +34,7 @@ Smarty4Js (Smarty For Javascript)
 
 #### install
 ```bash
-    [sudo] npm install -g smarty4Js [not publish yet, you can `git clone + npm link` now]
+    [sudo] npm install -g smarty4js
 ```
 
 #### grammar
