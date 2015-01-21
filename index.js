@@ -40,7 +40,6 @@ function Smarty() {
         'left_delimiter': '{%',
         'right_delimiter': '%}'
     };
-
     this.config.apply(this, arguments);
 }
 

@@ -1,9 +1,9 @@
-Smarty4Js (Smarty For Javascript)
+Smarty4Js (Smarty For JavaScript)
 ======================================
 
 ## what?
 
-- Javascript template engine
+- JavaScript template engine
 - Support smarty template grammar
 - Used in nodejs
 - Simple and powerful way to creat and render a template
