@@ -14,11 +14,14 @@ this is in {%$peoples[1]->city%}
 
 {%$info['location']->city|upper%}
 
-{%$abcdefghijk = 123%}
+{%$abcdefghijk = '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'%}
 {%$s1 = 'cde'%}
 {%$s2 = 'ghi'%}
-
 {%$ab{%$s1%}f{%$s2%}jk%}
+
+{%$tmpa = 2%}
+{%$tmpb = 10%}
+{%"-----testtesttesttes~~`$tmpa + $tmpb`~~ttesttesttesttesttest-----"%}
 
 {%time()%}
 
