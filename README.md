@@ -81,8 +81,14 @@ Smarty4Js (Smarty For JavaScript)
     // create a smarty object
     var s = new Smarty();
 
+    // if compile source is template code and hava `include, extend...` sentence in code
+    // you must give a dirpath by `setBasedir` method
+    s.setBasedir(path);
+
     // get compiler
-    var compiler = s.compile(tpl);
+    // `tpl` param is template code or template file path
+    var compiler = s.compile(tpl); 
+
 
     // get ast
     var ast = s.ast;
@@ -92,7 +98,10 @@ Smarty4Js (Smarty For JavaScript)
 
     // render smarty with data (3 methods)
     var html = compiler.render(data);
+
+    // `tpl` param is template code or template file path
     var html = s.render(tpl, data);
+
     var html = (new Function('return ' + js)()).render(data);
 ```
 

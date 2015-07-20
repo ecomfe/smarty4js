@@ -121,9 +121,7 @@ function getCommandInfo(command) {
             process.exit(1);
         }
     }
-    if (!fs.existsSync(assetPath)) {
-        assetPath = path.dirname(tplPath);
-    }
+
     return {
         tplPath: tplPath,
         conf: conf,

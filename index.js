@@ -10,6 +10,8 @@ var Renderer = require('./lib/Renderer');
 var phpfunc = require('./lib/phpfunc');
 var func = require('./lib/func');
 var utils = require('./lib/utils');
+var path = require('path');
+var fs = require('fs');
 
 /**
  * pre define template code
@@ -55,12 +57,27 @@ Smarty.prototype.config = function (conf) {
 };
 
 /**
+ * set tpl file base dir
+ * @param {string} path  base path
+ */
+Smarty.prototype.setBasedir = function (path) {
+    this.dirname = path;
+}
+
+/**
  * compile the smarty template code
  * @param  {string} tpl smarty template code/file path
  * @return {Object}     smarty Compiler object, have `render` mathod
  */
 Smarty.prototype.compile = function (tpl) {
+
     var conf = this.conf;
+    var filePath = path.resolve(process.cwd(), tpl);
+
+    if (fs.existsSync(filePath)) {
+        tpl = fs.readFileSync(filePath, 'utf-8');
+        this.dirname = path.dirname(filePath);
+    }
     this.ast = parser.parse(defineCode(tpl, conf));
 
     return this.compiler;
@@ -73,6 +90,14 @@ Smarty.prototype.compile = function (tpl) {
  * @return {string}      html string
  */
 Smarty.prototype.render = function (tpl, data) {
+
+    var filePath = path.resolve(process.cwd(), tpl);
+
+    if (fs.existsSync(filePath)) {
+        tpl = fs.readFileSync(filePath, 'utf-8');
+        this.dirname = path.dirname(filePath);
+    }
+
     return this.compile(tpl).render(data);
 };
 
