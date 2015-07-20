@@ -41,7 +41,7 @@ function Smarty() {
         'right_delimiter': '%}',
         'isAmd': true,
         'isCmd': true,
-        'globalVal': '_smartyTpl'
+        'globalVar': '_smartyTpl'
     };
     this.config.apply(this, arguments);
     this.compiler = new Compiler(this);
