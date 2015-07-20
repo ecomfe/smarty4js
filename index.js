@@ -34,13 +34,16 @@ function Smarty() {
     this.id = '__smarty__' + utils.getGUID();
     this.phpfunc = phpfunc;
     this.func = func;
-    this.compiler = new Compiler(this);
-    this.renderer = new Renderer(this);
     this.conf = {
         'left_delimiter': '{%',
-        'right_delimiter': '%}'
+        'right_delimiter': '%}',
+        'isAmd': true,
+        'isCmd': true,
+        'globalVal': '_smartyTpl'
     };
     this.config.apply(this, arguments);
+    this.compiler = new Compiler(this);
+    this.renderer = new Renderer(this);
 }
 
 /**

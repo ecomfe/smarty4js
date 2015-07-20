@@ -83,7 +83,7 @@ function getCommandInfo(command) {
     var tplPath = [];
     var confPath = opConf ? getObsPath(opConf) : '';
     var dataPath = opData ? getObsPath(opData) : '';
-    var assetPath = getObsPath(op['-o'] || op['--output'] || '.' + path.sep);
+    var assetPath = (op['-o'] || op['--output']) ? getObsPath(op['-o'] || op['--output']) : '';
     var data = {};
 
     tpls.forEach(function (tpl) {
@@ -94,10 +94,7 @@ function getCommandInfo(command) {
         }
         tplPath.push(tmp);
     });
-    if (!fs.existsSync(assetPath)) {
-        console.log('Not fount dir `' + assetPath + '`');
-        process.exit(1);
-    }
+
     if (dataPath) {
         if (!fs.existsSync(dataPath)) {
             console.log('Not found data file`' + dataPath + '`');
@@ -107,7 +104,7 @@ function getCommandInfo(command) {
             data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
         }
         catch (e) {
-            console.log('Make sure data file`' + dataPath + '` is right.');
+            console.log('Make sure data file`' + dataPath + '` is correct.');
             process.exit(1);
         }
     }
@@ -120,9 +117,12 @@ function getCommandInfo(command) {
             conf = require(confPath);
         }
         catch (e) {
-            console.log('Make sure config file`' + confPath + '` is right.');
+            console.log('Make sure config file`' + confPath + '` is correct.');
             process.exit(1);
         }
+    }
+    if (!fs.existsSync(assetPath)) {
+        assetPath = path.dirname(tplPath);
     }
     return {
         tplPath: tplPath,
