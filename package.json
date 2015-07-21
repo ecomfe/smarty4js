@@ -1,7 +1,7 @@
 {
     "name": "smarty4js",
     "description": "A JavaScript Template Engine Most Like Smarty",
-    "version": "0.1.5",
+    "version": "0.1.6-beta",
     "keywords": [
         "smarty",
         "smartyjs",
