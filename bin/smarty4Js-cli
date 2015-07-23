@@ -64,6 +64,12 @@ function smartyRender(tplPaths, data, conf, options) {
         var dirname = path.dirname(tplPath);
         var fileName = path.basename(tplPath).replace(/\..*/, '');
         var assetPath = path.resolve((options.assetPath || dirname), fileName + '.tpl');
+
+        smarty.dirname = dirname;
+        smarty.config(conf.config || {});
+        smarty.addPlugin(conf.plugins || {});
+        smarty.register(conf.funcs || {});
+
         ret = smarty.compile(fs.readFileSync(tplPath, 'utf8')).render(data);
 
         fs.writeFileSync(
