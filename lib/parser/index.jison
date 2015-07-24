@@ -64,7 +64,7 @@ al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
 %x t v iv eof c g
 %%
 <v,iv,t,eof>{ot}/'*'            { this.begin('c'); return 'L'; }
-<v,iv>'$smarty'((\.[\w]+)+)?    {return 'G';}
+<v,iv>'$smarty'((\.[\w]+)+)?    { return 'G'; }
 <eof>{ot}                       { this.popState(); this.begin('v'); return 'L'; }
 <v,iv>{ot}                      { this.begin('iv'); return 'L'; }
 <v,iv,c,g>{ct}                  {
