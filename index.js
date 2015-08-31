@@ -5,8 +5,8 @@
  */
 
 var parser = require('./lib/parser/index');
-var Compiler = require('./lib/Compiler');
-var Renderer = require('./lib/Renderer');
+var Compiler = require('./lib/compiler');
+var Renderer = require('./lib/renderer');
 var phpfunc = require('./lib/phpfunc');
 var func = require('./lib/func');
 var utils = require('./lib/utils');
