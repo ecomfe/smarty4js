@@ -105,3 +105,9 @@ Smarty4Js (Smarty For JavaScript)
     var html = (new Function('return ' + js)()).render(data);
 ```
 
+#### tips
+
+> this repository was transfered to my team (efe) repository https://github.com/ecomfe/smarty4js , you can go there to discuss, this repository will not be maintained.
+> 这个项目已经被迁移到我们efe团队的仓库中 https://github.com/ecomfe/smarty4js , 大家可以去那里进行讨论，这个仓库以后就不维护了。
+> 大家可以去那里star
+
