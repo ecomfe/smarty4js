@@ -1,0 +1,19 @@
+{
+    "eslint": {
+        "env": {
+            "node": true,
+            "browser": false
+        },
+
+        "globals": {
+            "__h": true,
+            "__f": true,
+            "__da": true
+        },
+
+        "rules": {
+            "no-console": 0,
+            "fecs-camelcase": [2, { "ignore": ["/_/"]}]
+        }
+    }
+}

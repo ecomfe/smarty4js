@@ -1,0 +1,26 @@
+{
+    "name": "smarty4Js",
+    "peoples": [
+        {
+            "city": "beijing",
+            "name": "Johnson",
+            "age": 22
+        },
+        {
+            "city": "hangzhou",
+            "name": "Tom",
+            "age": 27
+        },
+        {
+            "city": "shanghai",
+            "name": "Green",
+            "age": 25
+        }
+    ],
+    "info": {
+        "location": {
+            "city": "beijing",
+            "street": "shangdi 10 street..."
+        }
+    }
+}

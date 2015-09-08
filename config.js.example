@@ -1,0 +1,19 @@
+
+
+module.exports = {
+    config: {
+        'left_delimiter': '{%',
+        'right_delimiter': '%}',
+        'isAmd': false,
+        'isCmd': false,
+        'globalVar': '_smartyTpl'
+    },
+    plugins: { // add php function
+        testphp: function (str) {
+            return str + '--demo--';
+        }
+    },
+    funcs: { // add smarty function
+
+    }
+};

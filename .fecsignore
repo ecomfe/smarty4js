@@ -1,0 +1,4 @@
+lib/parser
+examples
+test
+node_modules

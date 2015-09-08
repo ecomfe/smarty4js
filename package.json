@@ -1,0 +1,35 @@
+{
+    "name": "smarty4js",
+    "description": "A JavaScript Template Engine Most Like Smarty",
+    "version": "0.1.7-beta",
+    "keywords": [
+        "smarty",
+        "smartyjs",
+        "template",
+        "tpl",
+        "smarty js",
+        "smarty.js",
+        "smarty4Js",
+        "parser",
+        "preprocessor",
+        "smarty compiler",
+        "compile smarty"
+    ],
+    "contributors": [
+        {
+            "name": "johnson",
+            "email": "zoumiaojiang@gmail.com"
+        }
+    ],
+    "bugs": {
+        "url": "https://github.com/ecomfe/smarty4js/issues"
+    },
+    "bin": {
+        "smarty4js": "./bin/smarty4js-cli"
+    },
+    "main": "index",
+    "devDependencies": {
+        "jison": "~0.4.15"
+    },
+    "repository": "git://github.com/ecomfe/smarty4js"
+}
