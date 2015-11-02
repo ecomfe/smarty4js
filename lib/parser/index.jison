@@ -348,6 +348,18 @@ single_for
             end: $7, 
             block: $9 
         }; }
+    | L for vara '=' expr to expr ID expr R stmts L '/' for R 
+        { $$ = {
+            type: 'FOR', 
+            item: $3, 
+            start: $5, 
+            end: $7, 
+            step: {
+                key: $8,
+                value: $9
+            },
+            block: $11 
+        }}
     ;
 
 foreachelse_stmts
