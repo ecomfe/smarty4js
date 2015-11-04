@@ -903,7 +903,7 @@ array
     | '[' array_item ']' 
         { $$ = { 
             type: 'ARRAY', 
-            items: $2 
+            items: [].concat($2) 
         }; }
     ;
 
