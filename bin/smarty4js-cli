@@ -95,7 +95,7 @@ function getCommandInfo(command) {
     tpls.forEach(function (tpl) {
         var tmp = getObsPath(tpl);
         if (!fs.existsSync(tmp)) {
-            console.log('Not fount template `' + tmp + '`');
+            console.log('Template `' + tmp + '` not found.');
             process.exit(1);
         }
         tplPath.push(tmp);
@@ -103,27 +103,27 @@ function getCommandInfo(command) {
 
     if (dataPath) {
         if (!fs.existsSync(dataPath)) {
-            console.log('Not found data file`' + dataPath + '`');
+            console.log('Data file `' + dataPath + '` not found.');
             process.exit(1);
         }
         try {
             data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
         }
         catch (e) {
-            console.log('Make sure data file`' + dataPath + '` is correct.');
+            console.log('Make sure data file `' + dataPath + '` is correct.');
             process.exit(1);
         }
     }
     if (confPath) {
         if (!fs.existsSync(confPath)) {
-            console.log('Not found config file`' + confPath + '`');
+            console.log('Config file `' + confPath + '` not found.');
             process.exit(1);
         }
         try {
             conf = require(confPath);
         }
         catch (e) {
-            console.log('Make sure config file`' + confPath + '` is correct.');
+            console.log('Make sure config file `' + confPath + '` is correct.');
             process.exit(1);
         }
     }
@@ -161,7 +161,7 @@ else {
         );
     }
     else {
-        console.log('No command `' + args[0] + '`');
+        console.log('Command `' + args[0] + '` does not exist. Try `render` or `compile`.');
         process.exit(1);
     }
 }
