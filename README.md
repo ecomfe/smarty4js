@@ -1,50 +1,48 @@
 Smarty4Js (Smarty For JavaScript)
 ======================================
 
-## what?
+## What?
 
 - JavaScript template engine
-- Support smarty template grammar
-- Used in nodejs
-- Simple and powerful way to creat and render a template
+- Supports Smarty template syntax
+- Used in Node.js
+- Simple and powerful way to create and render a template
 
-## why?
+## Why?
 
 - Powerful
-- Don't want to have two or more template in your project.
-- Deep love smarty
+- Don't want to have two or more templates in your project
+- Deep love for Smarty
 
-## when?
+## When?
 
-- When your Synchronous template is Smarty ,and your ajax template will use the same template.
-- When you want to write smarty template with JavaScript anywhere.
-- When you want to put a lot of logic in JavaScript template
-- When you like smarty very much
+- When your synchronous templates is Smarty, and your Ajax templates will use the same template
+- When you want to write Smarty templates with JavaScript anywhere
+- When you want to put a lot of logic in JavaScript templates
+- When you like Smarty very much
     
-## how?
+## How?
 
-- single
-- with grunt
-- with gulp
-- with edp
-- with all nodejs web subject
+- Single
+- With Grunt
+- With Gulp
+- With EDP
+- With all Node.js web subject
 
 
-### useage
+### Usage
 
-#### install
+#### Install
 ```bash
-    [sudo] npm install -g smarty4js
+    npm install -g smarty4js
 ```
 
-#### grammar
+#### Syntax
 ```
-    most like smarty template grammar
-    default left_delimiter is `{%`
-    default left_delimiter is `%}`
+    Most of Smarty syntax is supported.
 ```
 
-#### command line
+#### Command line
  ```bash
     // get tpl.js
     smarty4Js compile a.tpl [b.tpl ...] [-c|--config=confPath -o|--output=outputPath]
@@ -53,8 +51,8 @@ Smarty4Js (Smarty For JavaScript)
 
     // get tpl.html
     smarty4Js render a.tpl [b.tpl ...] -d|--data=jsonFilePath [-c|--config=confPath -o|--output=outputPath]
-        -d | --data  : json data file path for render
-        -c | --config: Use user-define config file
+        -d | --data  : JSON data file path to render
+        -c | --config: Use user-defined config file
         -o | --output: Specify a destination directory
 
     // show current version
@@ -63,28 +61,28 @@ Smarty4Js (Smarty For JavaScript)
 ``` 
 
 - if `render`, return html(`demo.tpl.html`), if `compile`, return jsTpl(`demo.tpl.js`)
-- jsTpl is closure, hava a `render` method, you can use it like
+- jsTpl is a closure. It has a `render` method that you can use:
 
-```javascript
+```Javascript
     
     // amd and cmd
     var template = require('demo.tpl');
     template.render(data);
 
-    // also could by <script>
+    // you can also use <script>
 
 ```
 
-#### used in nodejs
+#### used in Node.js
 ```javascript
     // get Smarty class
     var Smarty = require('smarty4Js');
 
-    // create a smarty object
+    // create a Smarty object
     var s = new Smarty();
 
-    // if compile source is template code and hava `include, extend...` sentence in code
-    // you must give a dirpath by `setBasedir` method
+    // if compile source is template code and have `include, extend...` sentence in code
+    // you must give a path by `setBasedir` method
     s.setBasedir(path);
 
     // get compiler
@@ -98,7 +96,7 @@ Smarty4Js (Smarty For JavaScript)
     // get js code
     var js = compiler.getJsTpl();
 
-    // render smarty with data (3 methods)
+    // render Smarty with data (3 methods)
     var html = compiler.render(data);
 
     // `tpl` param is template code or template file path
