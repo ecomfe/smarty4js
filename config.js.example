@@ -2,8 +2,8 @@
 
 module.exports = {
     config: {
-        'left_delimiter': '{%',
-        'right_delimiter': '%}',
+        'left_delimiter': '{%', // default
+        'right_delimiter': '%}', // default
         'isAmd': false,
         'isCmd': false,
         'globalVar': '_smartyTpl'

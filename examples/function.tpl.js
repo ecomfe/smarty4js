@@ -1,36 +1,6 @@
-(function(){var __ret={render:function(__tn, __da){if(typeof __tn=="object"){__da=__tn;__tn=undefined;}if(typeof __tn=="string"){__da=__da||{};}var __f={count:function (obj) {
-        var n = 0;
-        for (var i in obj) {
-            if (obj.hasOwnProperty(i)) {
-                n++;
-            }
-        }
-        return n;
-    }};var __func={__fn__html_options:function (p) {
-        __h += '<select name="' + (p.name || '') + '">';
-        if (p.values && p.output) {
-            for (var i in p.values) {
-                if (p.values.hasOwnProperty(i)) {
-                    var val = p.values[i];
-                    var out = p.output[i];
-                    __h += '<option label="' + out + '" value="' + val + '"'
-                        + (val === '' + p.selected ? ' selected' : '') + '>' + out + '</option>';
-                }
-            }
-        }
-        else if (p.options) {
-            var opts = p.options;
-            for (var j in opts) {
-                if (opts.hasOwnProperty(j)) {
-                    __h += '<option label="' + opts[j] + '" value="' + j + '"'
-                        + (j === '' + p.selected ? ' selected="selected"' : '') + '>' + opts[j] + '</option>';
-                }
-            }
-        }
-        __h += '</select>';
-    }};
+(function(root){var __ret={render:function(__tn, __da){if(typeof __tn=="object"){__da=__tn;__tn=undefined;}if(typeof __tn=="string"){__da=__da||{};}var __f={'count':function (obj){var n=0;for(var i in obj){if(obj.hasOwnProperty(i)){n++}}return n}};var __func={'__fn__html_options':function (e){var a=e.name||"select";var t='<select name="'+a+'">';if(e.values&&e.output){for(var r in e.values){if(e.values.hasOwnProperty(r)){var o=e.values[r];var n=e.output[r];t+='<option label="'+n+'" value="'+o+'"'+(o==e.selected?" selected":"")+">"+n+"</option>"}}}else if(e.options){var i=e.options;for(var l in i){if(i.hasOwnProperty(l)){t+='<option label="'+i[l]+'" value="'+l+'"'+(l==e.selected?" selected":"")+">"+i[l]+"</option>"}}}return t+"</select>"}};
 var __h="",__cap={},__ext={},__assign,__sec={},__for={},smarty={foreach:{},capture:{},ldelim:"{%",rdelim:"%}"},__dre=/^\d+(\.\d+)?$/g,__nre=/[\.\(\)\[\]\{\}\+\-\*\?\|\^\$]/g,
-__v=function(){var __va=Array.prototype.slice.call(arguments);for(var __vi=0,__vl=__va.length;__vi<__vl;__vi++){var __vd=__va[__vi];if(__vd!=undefined&&""+__vd!="NaN"){if(typeof __vd=="function"){return __vd();}else{return __vd;}}}return "";};__assign={"11":"aaa","22":"bbb","33":"ccc"};__da.myOptions=__assign;__assign=22;__da.mySelect=__assign;__h+=__func["__fn__html_options"]({name:"foo",options:__v(__da.myOptions),selected:__v(__da.mySelect)});
+__v=function(){var __va=Array.prototype.slice.call(arguments);for(var __vi=0,__vl=__va.length;__vi<__vl;__vi++){var __vd=__va[__vi];if(__vd!=undefined&&""+__vd!="NaN"){if(typeof __vd=="function"){return __vd();}else{return __vd;}}}};__assign={"11":"aaa","22":"bbb","33":"ccc"};__da.myOptions=__assign;__assign=22;__da.mySelect=__assign;__h+=__func["__fn__html_options"]({name:"foo",options:__v(__da.myOptions),selected:__v(__da.mySelect)});
 __func["__fn__funca"]=function(__p){for(var __ in __p){if(__p.hasOwnProperty(__)&&__da[__]==undefined){__da[__]=__p[__];}}
 var __func2313 = __p,__2314h="";
 __func2313.p=__v(__p.p,11);
@@ -60,12 +30,15 @@ __ca2323+=" hello";return __ca2323;};__da.foo={"__a0":__ca2323a};
 __h+="I say just";var __ca2324a=function(){var __ca2324="";
 __ca2324+=" world";return __ca2324;};__da.foo["__a1"]=__ca2324a;var __fc2325__d=__v(__da.foo),__fc2325fi=0,__fc2325__={},__fc2325={};
 for(var __fc2325k in __fc2325__d){if(__fc2325__d.hasOwnProperty(__fc2325k)){
-__fc2325__=smarty.foreach={index:__fc2325fi,key:__fc2325k.replace("__a",""),total:__f.count(__fc2325__d),first:__fc2325fi==0?1:"",last:(__fc2325fi==__f.count(__fc2325__d)-1)?1:"",show:(__fc2325__d[__fc2325k])?true:false};
+__fc2325__=smarty.foreach={index:__fc2325fi,iteration:__fc2325fi==0?"":__fc2325fi,key:__fc2325k.replace("__a",""),total:__f["count"](__fc2325__d),first:__fc2325fi==0?1:"",last:(__fc2325fi==__f["count"](__fc2325__d)-1)?1:"",show:(__fc2325__d[__fc2325k])?true:false};
 __fc2325["text"]=__fc2325__d[__fc2325k];
 __h+=__v(__fc2325.text,__da.text);
 __h+=", ";__fc2325fi++;}}
+__h+="{* when { is left_delimiter, } is right_delimiter *}{literal} function javascriptFunction() { alert(\'xxx\'); // comments }{/literal}";
+__h+=" {%xxxxxx, write anything here...%}";
 if(__tn){return __func["__fn__"+__tn](__da);}
 return __h;}};
 if (typeof exports=="object" && typeof module=="object"){exports=module.exports=__ret;}
-else if (typeof define=="function" && define.amd){define(__ret);}
-else {return __ret;}})();
+if (typeof define=="function" && define.amd){define(__ret);}
+root._smartyTpl=__ret;
+return __ret;})(this);

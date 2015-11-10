@@ -15,6 +15,7 @@ var fs = require('fs');
 
 /**
  * pre define template code
+ *
  * @param  {string} code template code
  * @param  {Object} conf smarty config
  * @return {string}      code of after pre define
@@ -22,12 +23,23 @@ var fs = require('fs');
 function defineCode(code, conf) {
     var ld = conf.left_delimiter;
     var rd = conf.right_delimiter;
-    return (code + ld + '*smarty4Js*' + rd)
-        .replace(new RegExp(utils.regEscape(ld), 'g'), '{%')
-        .replace(new RegExp(utils.regEscape(rd), 'g'), '%}')
+
+    // literal filter
+    var reld = utils.regEscape(ld);
+    var rerd = utils.regEscape(rd);
+    var re = new RegExp(reld + 'literal' + rerd + '([\\\s\\\S]*)' + reld + '\\/literal' + rerd, 'g');
+
+    code = code.replace(re, function () {
+        return RegExp.$1.replace(new RegExp(reld, 'g'), '__LD').replace(new RegExp(rerd, 'g'), '__RD');
+    });
+
+    return (code + ld + '*smarty4js*' + rd)
+        .replace(new RegExp(reld, 'g'), '{%')
+        .replace(new RegExp(rerd, 'g'), '%}')
         .replace(/\\\"/g, '__QD') // replace \" in string ""
         .replace(/\\\'/g, '__QS'); // replace \' in string ''
 }
+
 
 /**
  * @constructor

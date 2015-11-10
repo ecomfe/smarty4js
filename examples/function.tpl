@@ -38,8 +38,24 @@ I say just
 {%capture append="foo"%}
     world
 {%/capture%}
+
 {%foreach $foo as $text%}
     {%$text%}, 
 {%/foreach%}
+
+
+{* when { is left_delimiter, } is right_delimiter *}
+{literal}
+    function javascriptFunction() {
+        alert('xxx');
+        // comments
+    }
+{/literal}
+
+{%* when {% is left_delimiter, %} is right_delimiter *%}
+
+{%literal%}
+    {%xxxxxx, write anything here...%}
+{%/literal%}
 
 {%*all function used like smarty grammar*%}

@@ -40,6 +40,8 @@ Smarty4Js (Smarty For JavaScript)
 #### grammar
 ```
     most like smarty template grammar
+    default left_delimiter is `{%`
+    default left_delimiter is `%}`
 ```
 
 #### command line
