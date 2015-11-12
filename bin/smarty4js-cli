@@ -53,6 +53,7 @@ function smartyCompile(tplPaths, conf, options) {
             ret,
             {encodeing: 'utf8'}
         );
+        console.log('smarty4js compile success!');
     });
 
 }
@@ -77,6 +78,7 @@ function smartyRender(tplPaths, data, conf, options) {
             ret,
             {encodeing: 'utf8'}
         );
+        console.log('smarty4js render success!');
     });
 }
 

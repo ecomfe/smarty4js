@@ -27,7 +27,7 @@ kw      (
             'elseif'|'if'|'foreach'|'else'|'foreachelse'|
             'section'|'sectionelse'|'for'|'to'|'while'|'as'|
             'true'|'false'|'null'|'function'|'strip'|'capture'|
-            'block'|'literal'|'nocache'
+            'block'|'nocache'
         )
 multi_op  ('>='|'<='|'==='|'=='|'!='|'&&'|'||'|'->'|'=>'|'++'|'--')
 al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
@@ -61,13 +61,13 @@ al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
 
 
 /*----- start lexical grammar -----*/
-%x t v iv eof c g
+%x t v iv eof c
 %%
 <v,iv,t,eof>{ot}/'*'            { this.begin('c'); return 'L'; }
 <v,iv>'$smarty'((\.[\w]+)+)?    { return 'G'; }
 <eof>{ot}                       { this.popState(); this.begin('v'); return 'L'; }
 <v,iv>{ot}                      { this.begin('iv'); return 'L'; }
-<v,iv,c,g>{ct}                  {
+<v,iv,c>{ct}                    {
                                     var s = this.popState();
                                     if ('c' == s) {
                                         s = this.popState();
@@ -98,7 +98,7 @@ al_op     ('and'|'or'|'ge'|'not'|'gte'|'le'|'lte'|'lt'|'gt'|'ne'|'neq'|'eq')
                                         return 'TEXT';
                                     } 
                                 }
-<eof><<EOF>>                    { this.popState(); return 'EOF'; }
+<t,eof><<EOF>>                  { this.popState(); return 'EOF'; }
 <INITIAL><<EOF>>                { return 'EOF'; }
 <INITIAL>                       { this.begin('t');}
 
@@ -183,8 +183,6 @@ blocks
         { $$ = $1; }
     | block_stmts 
         { $$ = $1; }
-    | literal_stmts
-        { $$ = $1; }
     | capture_stmts
         { $$ = $1; }
     | nocache_stmts
@@ -238,16 +236,6 @@ capture_stmts
             name: $2, 
             attrs: $3 , 
             block: $5 
-        }; }
-    ;
-
-literal_stmts
-    : L literal R stmts L '/' literal R 
-        { $$ = { 
-            type: 'FUNC', 
-            name: $2, 
-            attrs: [], 
-            block: $4 
         }; }
     ;
 

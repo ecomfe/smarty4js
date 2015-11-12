@@ -1,10 +1,9 @@
 /**
- * @file Smarty4Js
+ * @file Smarty4js
  * @author johnson [zoumiaojiang@gmail.com]
  * @date  2014-11-13
  */
 
-var parser = require('./lib/parser/index');
 var Compiler = require('./lib/compiler');
 var Renderer = require('./lib/renderer');
 var phpfunc = require('./lib/phpfunc');
@@ -13,29 +12,55 @@ var utils = require('./lib/utils');
 var path = require('path');
 var fs = require('fs');
 
+
 /**
- * pre define template code
+ * pretreatment template code
  *
  * @param  {string} code template code
  * @param  {Object} conf smarty config
  * @return {string}      code of after pre define
  */
-function defineCode(code, conf) {
+function pretreatmentCode(code, conf) {
     var ld = conf.left_delimiter;
     var rd = conf.right_delimiter;
-
-    // literal filter
     var reld = utils.regEscape(ld);
     var rerd = utils.regEscape(rd);
-    var re = new RegExp(reld + 'literal' + rerd + '([\\\s\\\S]*)' + reld + '\\/literal' + rerd, 'g');
 
-    code = code.replace(re, function () {
-        return RegExp.$1.replace(new RegExp(reld, 'g'), '__LD').replace(new RegExp(rerd, 'g'), '__RD');
+    // literal filter
+    var literalPaserModulePath = path.resolve(__dirname, 'lib', 'parser','literal.js');
+    var literalPaserFile = fs.readFileSync(literalPaserModulePath, 'utf8');
+    var homePath = utils.getHomePath();
+    var realLiteralParserFilePath = path.resolve(homePath, 'literal.js');
+
+    if (ld !== '{%') {
+        literalPaserFile = literalPaserFile.replace(/\\\{%/g, reld);
+    }
+    if (rd !== '%}') {
+        literalPaserFile = literalPaserFile.replace(/%\\\}/g, rerd);
+    }
+
+    fs.writeFileSync(realLiteralParserFilePath, literalPaserFile);
+
+    var literalAst = require(realLiteralParserFilePath).parse(code);
+    var newCode = '';
+
+    literalAst.forEach(function (node) {
+        var type = node.type;
+        var value = node.value;
+        if (value && value.trim().length > 0) {
+            if (type === 'TEXT') {
+                newCode += value;
+            }
+            else if (type === 'LTEXT') {
+                newCode += value.replace(new RegExp(reld, 'g'), '__LD').replace(new RegExp(rerd, 'g'), '__RD');
+            }
+        }
     });
 
-    return (code + ld + '*smarty4js*' + rd)
-        .replace(new RegExp(reld, 'g'), '{%')
-        .replace(new RegExp(rerd, 'g'), '%}')
+    // jison hack
+    newCode += (ld + '*smarty4js*' + rd);
+
+    return newCode
         .replace(/\\\"/g, '__QD') // replace \" in string ""
         .replace(/\\\'/g, '__QS'); // replace \' in string ''
 }
@@ -84,13 +109,28 @@ Smarty.prototype.setBasedir = function (path) {
 Smarty.prototype.compile = function (tpl) {
 
     var conf = this.conf;
-    var filePath = path.resolve(process.cwd(), tpl);
+    var filePath = path.resolve(process.cwd(), (tpl || '' + utils.getGUID()));
+    var ld = conf.left_delimiter;
+    var rd = conf.right_delimiter;
+    var paserModulePath = path.resolve(__dirname, 'lib', 'parser','index.js');
+    var paserFile = fs.readFileSync(paserModulePath, 'utf8');
+    var homePath = utils.getHomePath();
+    var realParserFilePath = path.resolve(homePath, 'index.js');
 
     if (fs.existsSync(filePath)) {
         tpl = fs.readFileSync(filePath, 'utf-8');
         this.dirname = path.dirname(filePath);
     }
-    this.ast = parser.parse(defineCode(tpl, conf));
+
+    if (ld !== '{%') {
+        paserFile = paserFile.replace(/\\\{%/g, utils.regEscape(ld));
+    }
+    if (rd !== '%}') {
+        paserFile = paserFile.replace(/%\\\}/g, utils.regEscape(rd));
+    }
+
+    fs.writeFileSync(realParserFilePath, paserFile);
+    this.ast = require(realParserFilePath).parse(pretreatmentCode(tpl, conf));
 
     return this.compiler;
 };
