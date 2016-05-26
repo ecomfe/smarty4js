@@ -177,4 +177,15 @@ Smarty.prototype.addPlugin = function (plugins) {
     }
 };
 
+/**
+ * support express
+ *
+ * @param  {string}   path    tpl path
+ * @param  {Object}   options data
+ * @param  {Function} fn      callback
+ */
+Smarty.__express = function (path, options, fn) {
+    fn(null, new Smarty().render(path, options));
+};
+
 module.exports = Smarty;
