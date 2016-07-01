@@ -1,0 +1,169 @@
+#!/usr/bin/env node
+
+var path = require('path');
+var fs = require('fs');
+
+var Smarty = require('../index');
+var utils = require('../lib/utils');
+
+var args = process.argv.slice(2);
+var cwd = process.cwd();
+var command = {};
+var cinfo = {};
+var smarty = new Smarty();
+
+function getObsPath(p) {
+    return path.resolve(cwd, p);
+}
+
+function parseCommand (arr) {
+    var options = {};
+    var argv = [];
+    arr.forEach(function (item) {
+        if (item.charAt(0) === '-') {
+            var tmp = item.split('=');
+            options[tmp[0]] = tmp[1] || true;
+        }
+        else {
+            argv.push(item);
+        }
+    });
+    return {
+        options: options,
+        argv: argv
+    }
+}
+
+function smartyCompile(tplPaths, conf, options) {
+    tplPaths.forEach(function (tplPath) {
+        var ret = '';
+        var dirname = path.dirname(tplPath);
+        var fileName = path.basename(tplPath).replace(/\..*/, '');
+        var assetPath = path.resolve((options.assetPath || dirname), fileName + '.tpl.js');
+
+        smarty.dirname = dirname;
+        smarty.config(conf.config || {});
+        smarty.addPlugin(conf.plugins || {});
+        smarty.register(conf.funcs || {});
+
+        ret = smarty.compile(fs.readFileSync(tplPath, 'utf8')).getJsTpl();
+
+        fs.writeFileSync(
+            assetPath,
+            ret,
+            {encodeing: 'utf8'}
+        );
+        console.log('smarty4js compile success!');
+    });
+
+}
+
+function smartyRender(tplPaths, data, conf, options) {
+    // smartyCompile(tplPaths, conf, options);
+    tplPaths.forEach(function (tplPath) {
+        var ret = '';
+        var dirname = path.dirname(tplPath);
+        var fileName = path.basename(tplPath).replace(/\..*/, '');
+        var assetPath = path.resolve((options.assetPath || dirname), fileName + '.tpl');
+
+        smarty.dirname = dirname;
+        smarty.config(conf.config || {});
+        smarty.addPlugin(conf.plugins || {});
+        smarty.register(conf.funcs || {});
+
+        ret = smarty.compile(fs.readFileSync(tplPath, 'utf8')).render(data);
+
+        fs.writeFileSync(
+            assetPath + '.html',
+            ret,
+            {encodeing: 'utf8'}
+        );
+        console.log('smarty4js render success!');
+    });
+}
+
+function getCommandInfo(command) {
+    var op = command.options;
+    var tpls = command.argv;
+    var conf = {};
+    var opConf = op['-c'] || op['--config'];
+    var opData = op['-d'] || op['--data'];
+    var tplPath = [];
+    var confPath = opConf ? getObsPath(opConf) : '';
+    var dataPath = opData ? getObsPath(opData) : '';
+    var assetPath = (op['-o'] || op['--output']) ? getObsPath(op['-o'] || op['--output']) : '';
+    var data = {};
+
+    tpls.forEach(function (tpl) {
+        var tmp = getObsPath(tpl);
+        if (!fs.existsSync(tmp)) {
+            console.log('Template `' + tmp + '` not found.');
+            process.exit(1);
+        }
+        tplPath.push(tmp);
+    });
+
+    if (dataPath) {
+        if (!fs.existsSync(dataPath)) {
+            console.log('Data file `' + dataPath + '` not found.');
+            process.exit(1);
+        }
+        try {
+            data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+        }
+        catch (e) {
+            console.log('Make sure data file `' + dataPath + '` is correct.');
+            process.exit(1);
+        }
+    }
+    if (confPath) {
+        if (!fs.existsSync(confPath)) {
+            console.log('Config file `' + confPath + '` not found.');
+            process.exit(1);
+        }
+        try {
+            conf = require(confPath);
+        }
+        catch (e) {
+            console.log('Make sure config file `' + confPath + '` is correct.');
+            process.exit(1);
+        }
+    }
+
+    return {
+        tplPath: tplPath,
+        conf: conf,
+        assetPath: assetPath,
+        data: data
+    };
+}
+
+if (args.length === 1 && (args[0] === '-v' || args[0] === '--version')) {
+    console.log('version: ' + JSON.parse(fs.readFileSync(
+        path.resolve(__dirname, '..'  + path.sep + 'package.json'),
+        'UTF-8'
+    )).version);
+}
+else {
+    if (args[0] === 'compile') { // smarty4Js compile
+        cinfo = getCommandInfo(parseCommand(args.slice(1)));
+        smartyCompile(
+            cinfo.tplPath,
+            cinfo.conf,
+            {assetPath: cinfo.assetPath}
+        );
+    }
+    else if (args[0] === 'render') { // smarty4Js render
+        cinfo = getCommandInfo(parseCommand(args.slice(1)));
+        smartyRender(
+            cinfo.tplPath,
+            cinfo.data,
+            cinfo.conf,
+            {assetPath: cinfo.assetPath}
+        );
+    }
+    else {
+        console.log('Command `' + args[0] + '` does not exist. Try `render` or `compile`.');
+        process.exit(1);
+    }
+}
