@@ -119,7 +119,7 @@ Smarty.prototype.compile = function (tpl) {
 
     if (fs.existsSync(filePath)) {
         tpl = fs.readFileSync(filePath, 'utf-8');
-        this.dirname = path.dirname(filePath);
+        this.dirname = this.dirname || path.dirname(filePath);
     }
 
     if (ld !== '{%') {
@@ -147,7 +147,7 @@ Smarty.prototype.render = function (tpl, data) {
 
     if (fs.existsSync(filePath)) {
         tpl = fs.readFileSync(filePath, 'utf-8');
-        this.dirname = path.dirname(filePath);
+        this.dirname = this.dirname || path.dirname(filePath);
     }
 
     return this.compile(tpl).render(data);
