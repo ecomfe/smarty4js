@@ -79,7 +79,13 @@ Smarty4Js (Smarty For JavaScript)
     var Smarty = require('smarty4Js');
 
     // create a Smarty object
-    var s = new Smarty();
+    var s = new Smarty({
+        'left_delimiter': '{%', // default
+        'right_delimiter': '%}', // default
+        'isAmd': false,
+        'isCmd': false,
+        'globalVar': '_smartyTpl'
+    });
 
     // if compile source is template code and have `include, extend...` sentence in code
     // you must give a path by `setBasedir` method
