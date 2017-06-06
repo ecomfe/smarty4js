@@ -1,32 +1,33 @@
 /**
  * @file conditions render(include if, else, elseif, else if)
- * @author johnson [zoumiaojiang@gmail.com]
+ * @author mj(zoumiaojiang@gmail.com)
  */
 
-var utils = require('../utils');
 
-module.exports = function (Renderer) {
+import utils from '../utils';
+
+export default function (Renderer) {
 
     utils.mixin(Renderer.prototype, {
 
         /**
          * render if stmts
          * (this method include adapta ast nodes to real if, else, elseif)
+         *
          * @param  {Object} node  ast node
          * @param  {number} flag  is tag in string?(2: true, 0: false)
          * @return {string}       render result
          */
-        _getIf: function (node, flag) {
-            var me = this;
-            var expr = node.expr;
-            var block = node.block;
-            var ci = 0;
-            var elseifindex = [];
-            var elseindex = 0;
-            var ifProcess = []; // real relations of if-else stmts
-            var ret = '';
+        _getIf(node, flag) {
+            let me = this;
+            let {expr, block} = node;
+            let ci = 0;
+            let elseifindex = [];
+            let elseindex = 0;
+            let ifProcess = []; // real relations of if-else stmts
+            let ret = '';
 
-            block.forEach(function (b, index) {
+            block.forEach((b, index) => {
                 if (b.type === 'ELSEIF') {
                     elseifindex.push(index);
                 }
@@ -36,7 +37,7 @@ module.exports = function (Renderer) {
             });
 
             if (elseifindex.length > 0) {
-                for (var i = 0, l = elseifindex.length; i <= l; i++) {
+                for (let i = 0, l = elseifindex.length; i <= l; i++) {
                     if (ci === 0) {
                         ifProcess.push({
                             type: 'IF',
@@ -77,8 +78,8 @@ module.exports = function (Renderer) {
             }
 
             ifProcess.forEach(function (nod) {
-                var type = nod.type;
-                var tmps = '';
+                let type = nod.type;
+                let tmps = '';
                 switch (type) {
                     case 'IF':
                         ret += me._getIfReal(nod, flag);
@@ -101,13 +102,14 @@ module.exports = function (Renderer) {
 
         /**
          * real render of if_stmt
+         *
          * @param  {Object} node  ast node
          * @param  {number} flag  is tag in string?(2: true, 0: false)
          * @return {string}       render result
          */
-        _getIfReal: function (node, flag) {
-            var me = this;
-            var expr = me._getExpr(node.expr);
+        _getIfReal(node, flag) {
+            let me = this;
+            let expr = me._getExpr(node.expr);
             return flag
                 ? '(' + expr + '?(' + me._init(node.block, flag) + '):__ELSE__)'
                 : '\nif(' + expr + '){' + me._init(node.block) + '}';
@@ -115,13 +117,14 @@ module.exports = function (Renderer) {
 
         /**
          * real render of else_stmt
+         *
          * @param  {Object} node  ast node
          * @param  {number} flag  is tag in string?(2: true, 0: false)
          * @return {string}       render result
          */
-        _getElseIf: function (node, flag) {
-            var me = this;
-            var expr = me._getExpr(node.expr);
+        _getElseIf(node, flag) {
+            let me = this;
+            let expr = me._getExpr(node.expr);
             return flag
                 ? '(' + expr + '?(' + me._init(node.block, flag) + '):__ELSE__)'
                 : '\nelse if(' + expr + '){' + me._init(node.block) + '}';
@@ -129,15 +132,16 @@ module.exports = function (Renderer) {
 
         /**
          * real render of elseif_stmt
+         *
          * @param  {Object} node  ast node
          * @param  {number} flag  is tag in string?(2: true, 0: false)
          * @return {string}       render result
          */
-        _getElse: function (node, flag) {
-            var me = this;
+        _getElse(node, flag) {
+            let me = this;
             return flag
                 ? '(' + me._init(node.block, flag) + ')'
                 : '\nelse{' + me._init(node.block) + '}';
         }
     });
-};
+}

@@ -1,11 +1,12 @@
 /**
  * @file loop of smarty(for, foreach, section, while)
- * @author johnson [zoumiaojiang@gmail.com]
+ * @author mj(zoumiaojiang@gmail.com)
  */
 
-var utils = require('../utils');
 
-module.exports = function (Renderer) {
+import utils from '../utils';
+
+export default function (Renderer) {
 
     utils.mixin(Renderer.prototype, {
 
@@ -17,21 +18,22 @@ module.exports = function (Renderer) {
          * {%foreach $from as $key => $item%}
          *     ...
          * {%/foreach%}
+         *
          * @param  {Object} node    ast node
          * @return {string}         render result
          */
-        _getFor: function (node) {
-            var item = node.item;
-            var from = node.from;
-            var block = node.block;
-            var start = node.start;
-            var end = node.end;
-            var step = node.step;
-            var fel = 0; // foreachelse
-            var me = this;
-            var fc = '__fc' + utils.getGUID();
-            var ret;
-            var stepStr = 'i++';
+        _getFor(node) {
+            let item = node.item;
+            let from = node.from;
+            let block = node.block;
+            let start = node.start;
+            let end = node.end;
+            let step = node.step;
+            let fel = 0; // foreachelse
+            let me = this;
+            let fc = '__fc' + utils.getGUID();
+            let ret;
+            let stepStr = 'i++';
 
             if (start && end) {
                 if (step) {
@@ -57,9 +59,9 @@ module.exports = function (Renderer) {
                 me.ctxScope.pop();
             }
             else {
-                var data = me._getExpr(from);
-                var val;
-                var key;
+                let data = me._getExpr(from);
+                let val;
+                let key;
                 fel = utils.getForeachelseIndex(block);
                 if (item.type === 'OBJ') {
                     val = item.value.value.value;
@@ -74,7 +76,7 @@ module.exports = function (Renderer) {
                     + fc + '__={},'
                     + fc + '={};\n';
                 if (fel) {
-                    var feblock = block[fel].block.concat(block.slice(fel + 1));
+                    let feblock = block[fel].block.concat(block.slice(fel + 1));
                     block = block.slice(0, fel);
                     ret += 'if(' + fc + '__d&&__f["count"](' + fc + '__d)) {';
                 }
@@ -109,28 +111,29 @@ module.exports = function (Renderer) {
          * {%foreach from=xxx key=xxx name=xxx item=xxx%}
          *     ...
          * {%/foreach%}
+         *
          * @param  {Object}     node ast node
          * @return {string}     render result
          */
-        _getFuncFor: function (node) {
-            var me = this;
-            var attrs = node.attrs;
-            var block = node.block;
-            var from;
-            var item;
-            var key;
-            var name;
-            var ret;
-            var fel = 0; // foreachelse
+        _getFuncFor(node) {
+            let me = this;
+            let attrs = node.attrs;
+            let block = node.block;
+            let from;
+            let item;
+            let key;
+            let name;
+            let ret;
+            let fel = 0; // foreachelse
 
-            attrs.forEach(function (attr) {
-                var akey = attr.key.value;
-                var type = attr.value ? attr.value.type : '';
+            attrs.forEach(attr => {
+                let akey = attr.key.value;
+                let type = attr.value ? attr.value.type : '';
                 if (akey === 'from' && (type === 'VAR' || type === 'E' || type === 'ARRAY')) {
                     from = me._getExpr(attr.value);
                 }
                 else if (akey === 'item') {
-                    var val = attr.value;
+                    let val = attr.value;
                     if (val.type === 'STR') {
                         item = me._getExpr(val);
                     }
@@ -147,7 +150,7 @@ module.exports = function (Renderer) {
             });
 
             if (from && item) {
-                var fc = '__fc' + utils.getGUID();
+                let fc = '__fc' + utils.getGUID();
                 fel = utils.getForeachelseIndex(block);
                 ret = 'var '
                     + fc + '__d=' + from + ','
@@ -155,7 +158,7 @@ module.exports = function (Renderer) {
                     + fc + '__={},'
                     + fc + '={};\n';
                 if (fel) {
-                    var feblock = block[fel].block.concat(block.slice(fel + 1));
+                    let feblock = block[fel].block.concat(block.slice(fel + 1));
                     block = block.slice(0, fel);
                     ret += 'if(' + fc + '__d&&__f["count"](' + fc + '__d)) {';
                 }
@@ -189,37 +192,39 @@ module.exports = function (Renderer) {
          * {%while expr%}
          *     ...
          * {%/while%}
+         *
          * @param  {Object} node     ast node
          * @return {string}          render result
          */
-        _getWhile: function (node) {
-            var me = this;
+        _getWhile(node) {
+            let me = this;
             return '\nwhile(' + me._getExpr(node.expr) + '){' + me._init(node.block) + '}';
         },
 
         /**
          * render section function
+         *
          * @param  {Object} node     ast node
          * @return {string}          render string
          */
-        _getSection: function (node) {
-            var me = this;
-            var fc = '__fc' + utils.getGUID();
-            var name;
-            var loop;
-            var step = 1;
-            var start = 0;
-            var max = fc + 'l';
-            var show = true;
-            var attrs = node.attrs;
-            var block = node.block;
-            var sel = 0; // sectionelse flag
-            var ret = '';
+        _getSection(node) {
+            let me = this;
+            let fc = '__fc' + utils.getGUID();
+            let name;
+            let loop;
+            let step = 1;
+            let start = 0;
+            let max = fc + 'l';
+            let show = true;
+            let attrs = node.attrs;
+            let block = node.block;
+            let sel = 0; // sectionelse flag
+            let ret = '';
 
             if (attrs) {
-                attrs.forEach(function (attr) {
-                    var key = attr.key.value;
-                    var val = attr.value;
+                attrs.forEach(attr => {
+                    let key = attr.key.value;
+                    let val = attr.value;
                     if (key === 'name') {
                         name = me._getExpr(val);
                     }
@@ -253,7 +258,7 @@ module.exports = function (Renderer) {
                         +     fc + 't=1;'
                         + '}';
                     if (sel) {
-                        var seblock = block[sel].block.concat(block.slice(sel + 1));
+                        let seblock = block[sel].block.concat(block.slice(sel + 1));
                         block = block.slice(0, sel);
                         ret += 'if(' + fc + 'o&&__f["count"](' + fc + 'o)) {';
                     }
@@ -291,4 +296,4 @@ module.exports = function (Renderer) {
             return ret;
         }
     });
-};
+}

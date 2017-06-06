@@ -1,46 +1,48 @@
 /**
  * @file render of assign_stmt
- * @author johnson [zoumiaojiang@gmail.com]
+ * @author mj(zoumiaojiang@gmail.com)
  */
 
-var utils = require('../utils');
+import utils from '../utils';
 
-module.exports = function (Renderer) {
+export default function (Renderer) {
 
     utils.mixin(Renderer.prototype, {
 
         /**
          * render assign
-         * {%$some_var = anything%}
+         * {%$some_let = anything%}
+         *
          * @param  {Object} node     ast node
          * @return {string}          render result
          */
-        _assign: function (node) {
-            var me = this;
-            var key = node.key;
-            var ret = me._getOriginVar(key);
+        _assign(node) {
+            let me = this;
+            let key = node.key;
+            let ret = me._getOriginVar(key);
 
             /**
              * add scope for assign var
+             *
              * @param  {string} str   pre-render result
              * @return {string}       render result
              */
             function addScope(str) { // TODO: now all assign to smarty global context...
 
                 // a tmp assign var
-                var tmps = '__assign=' + me._getExpr(node.value) + ';';
-                var scope;
+                let tmps = '__assign=' + me._getExpr(node.value) + ';';
+                let scope;
 
                 // scope = me.ctxScope[0];
-                for (var ctxi = me.ctxScope.length - 1; ctxi >= 0; ctxi--) {
+                for (let ctxi = me.ctxScope.length - 1; ctxi >= 0; ctxi--) {
                     scope = me.ctxScope[ctxi];
-                    var tmpa = ret.replace(/__SCOPE/g, scope).split('.');
-                    var kf = tmpa[0];
-                    for (var index = 0, jl = tmpa.length; index < jl; index++) {
-                        var item = tmpa[index];
+                    let tmpa = ret.replace(/__SCOPE/g, scope).split('.');
+                    let kf = tmpa[0];
+                    for (let index = 0, jl = tmpa.length; index < jl; index++) {
+                        let item = tmpa[index];
                         if (index !== 0 && index !== jl - 1 && item) {
-                            var spli = ((item.indexOf('[') > -1) ? '' : '.');
-                            var tmp = kf + spli + item;
+                            let spli = ((item.indexOf('[') > -1) ? '' : '.');
+                            let tmp = kf + spli + item;
                             tmps += tmp + '=' + tmp + '?' + tmp + ':{};';
                             kf += spli + item;
                         }
@@ -59,22 +61,22 @@ module.exports = function (Renderer) {
         /**
          * assign function
          * {%assign var=xxx value=xxx%}
+         *
          * @param  {Object} node     ast node
          * @return {string}          render string
          */
-        _assignFunc: function (node) {
-            var me = this;
-            var attrs = node.attrs;
-            var varKey;
-            var varVal;
-            var ret = '';
+        _assignFunc(node) {
+            let me = this;
+            let attrs = node.attrs;
+            let varKey;
+            let varVal;
+            let ret = '';
             if (attrs) {
-                attrs.forEach(function (attr) {
-                    var key = attr.key;
-                    var val = attr.value;
+                attrs.forEach(attr => {
+                    let {key, value} = attr;
                     if (key.value === 'var') {
-                        if (val.type === 'STR') {
-                            varKey = '__da.' + val.value;
+                        if (value.type === 'STR') {
+                            varKey = '__da.' + value.value;
                         }
                         else {
                             throw new Error('Assign Type Error!');
@@ -82,7 +84,7 @@ module.exports = function (Renderer) {
                     }
 
                     if (key.value === 'value') {
-                        varVal = me._getExpr(val);
+                        varVal = me._getExpr(value);
                     }
                 });
 
@@ -93,4 +95,4 @@ module.exports = function (Renderer) {
             return ret;
         }
     });
-};
+}

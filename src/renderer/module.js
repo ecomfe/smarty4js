@@ -1,41 +1,43 @@
 /**
  * @file module of smarty (extends, include, block)
- * @author johnson [zoumiaojiang@gmail.com]
+ * @author mj(zoumiaojiang@gmail.com)
  */
 
-var utils = require('../utils');
-var fs = require('fs');
-var path = require('path');
 
-module.exports = function (Renderer) {
+import utils from '../utils';
+import path from 'path';
+import fs from 'fs';
+
+export default function (Renderer) {
 
     utils.mixin(Renderer.prototype, {
 
         /**
          * render include
          * {%include file="./a/b/c.tpl" assign=xxx%}
+         *
          * @param  {Object} node     ast node
          * @return {string}          render result
          */
-        _getInclude: function (node) {
-            var me = this;
-            var attrs = node.attrs;
-            var filePath;
-            var Class = me.eClass;
-            var s = new Class(me.engine.conf);
-            var includeRet;
-            var fc = '__ic' + utils.getGUID();
-            var ret = 'var ' + fc + '={};';
+        _getInclude(node) {
+            let me = this;
+            let attrs = node.attrs;
+            let filePath;
+            let Class = me.eClass;
+            let s = new Class(me.engine.conf);
+            let includeRet;
+            let fc = '__ic' + utils.getGUID();
+            let ret = 'let ' + fc + '={};';
 
             s.dirname = me.engine.dirname || process.cwd();
 
             me.ctxScope.push(fc);
-            for (var index = 0, l = attrs.length; index < l; index++) {
-                var attr = attrs[index];
-                var key = attr.key.value;
+            for (let index = 0, l = attrs.length; index < l; index++) {
+                let attr = attrs[index];
+                let key = attr.key.value;
                 if (key === 'file' || !attr.value) {
-                    var vn = attr.value;
-                    var tmpPath = me._getExpr(vn ? vn : attr.key).replace(/\"/g, '');
+                    let vn = attr.value;
+                    let tmpPath = me._getExpr(vn ? vn : attr.key).replace(/\"/g, '');
                     filePath = path.resolve(s.dirname, tmpPath);
                     if (fs.existsSync(filePath)) {
                         s.dirname = path.dirname(filePath);
@@ -48,9 +50,9 @@ module.exports = function (Renderer) {
                 }
             }
 
-            attrs.forEach(function (attr) {
-                var key = attr.key.value;
-                var value = attr.value;
+            attrs.forEach(attr => {
+                let key = attr.key.value;
+                let value = attr.value;
                 if (key === 'assign') {
                     if (value.type === 'STR') {
                         includeRet = '\nfunction __fn__' + value.value + '(){' + includeRet + '\n}';
@@ -68,23 +70,24 @@ module.exports = function (Renderer) {
 
         /**
          * render extends
+         *
          * @param  {Object} node     ast node
          * @return {string}          render result
          */
-        _getExtends: function (node) {
-            var me = this;
-            var filePath;
-            var Class = me.eClass;
-            var s = new Class(me.engine.conf);
-            var extendsRet = '';
+        _getExtends(node) {
+            let me = this;
+            let filePath;
+            let Class = me.eClass;
+            let s = new Class(me.engine.conf);
+            let extendsRet = '';
             s.dirname = me.engine.dirname || process.cwd();
 
-            for (var index = 0, l = node.attrs.length; index < l; index++) {
-                var attr = node.attrs[index];
-                var key = attr.key.value;
+            for (let index = 0, l = node.attrs.length; index < l; index++) {
+                let attr = node.attrs[index];
+                let key = attr.key.value;
                 if (key === 'file' || !attr.value) {
-                    var vn = attr.value;
-                    var tmpPath = me._getExpr(vn ? vn : attr.key).replace(/\"/g, '');
+                    let vn = attr.value;
+                    let tmpPath = me._getExpr(vn ? vn : attr.key).replace(/\"/g, '');
                     filePath = path.resolve(s.dirname, tmpPath);
                     if (fs.existsSync(filePath)) {
                         s.dirname = path.dirname(filePath);
@@ -101,34 +104,34 @@ module.exports = function (Renderer) {
 
         /**
          * render block in master of extends
+         *
          * @param  {Object} node     ast node
          * @return {string}          render result
          */
-        _getMasterBlock: function (node) { // name="aaa"
-            var me = this;
-            var attrs = node.attrs;
-            var block = node.block;
-            var scope = me.extScope;
-            var ret = '';
+        _getMasterBlock(node) { // name="aaa"
+            let me = this;
+            let {attrs, block} = node;
+            let scope = me.extScope;
+            let ret = '';
 
             if (attrs) {
-                attrs.forEach(function (attr) {
-                    var key = attr.key;
-                    var val = attr.value;
+                attrs.forEach(attr => {
+                    let key = attr.key;
+                    let val = attr.value;
                     if (key.value === 'name' && val && val.type === 'STR') {
-                        var defaultFunc = '';
-                        var des = '';
+                        let defaultFunc = '';
+                        let des = '';
                         if (scope.length > 1) {
-                            for (var i = 0; i < scope.length - 1; i++) {
+                            for (let i = 0; i < scope.length - 1; i++) {
                                 des = scope[i] + val.value;
                                 ret += 'function ' + des + '(){return 0;}';
                             }
-                            for (i = 0; i < scope.length - 1; i++) {
+                            for (let i = 0; i < scope.length - 1; i++) {
                                 des = scope[i] + val.value;
                                 defaultFunc += des + '(__p)||';
                             }
                         }
-                        var es = scope[scope.length - 1] + val.value;
+                        let es = scope[scope.length - 1] + val.value;
                         ret += 'function ' + es + '(__p){' + defaultFunc + '__p.c();return 1;};'
                             + es + '({'
                             +    'c: function(){' + me._init(block) + 'return 1;}'
@@ -142,24 +145,24 @@ module.exports = function (Renderer) {
 
         /**
          * render block in child of extends
+         *
          * @param  {Object} node     ast node
          * @return {string}          render result
          */
-        _getSubBlock: function (node) { // name="aaa" append && prepend
-            var me = this;
-            var attrs = node.attrs;
-            var block = node.block;
-            var name = '';
-            var pos = '';
-            var content = '';
-            var ret = '';
-            var scope = me.extScope;
+        _getSubBlock(node) { // name="aaa" append && prepend
+            let me = this;
+            let {attrs, block} = node;
+            let name = '';
+            let pos = '';
+            let content = '';
+            let ret = '';
+            let scope = me.extScope;
 
             if (attrs) {
-                for (var i = 0, l = attrs.length; i < l; i++) {
-                    var attr = attrs[i];
-                    var key = attr.key.value;
-                    var val = attr.value;
+                for (let i = 0, l = attrs.length; i < l; i++) {
+                    let attr = attrs[i];
+                    let key = attr.key.value;
+                    let val = attr.value;
                     if (key === 'name' && val && val.type === 'STR') {
                         name = val.value;
                     }
@@ -174,17 +177,17 @@ module.exports = function (Renderer) {
                     content += me._init(block);
                 }
                 else {
-                    for (i = scope.length - 2; i >= 0; i--) {
+                    for (let i = scope.length - 2; i >= 0; i--) {
                         content += scope[i] + name + '({c:function (){' + me._init(block) + '}});';
                     }
                 }
                 content = pos ? (pos === 1 ? ('__p.c();' + content) : (content + '__p.c();')) : content;
 
-                var es = scope[scope.length - 1] + name;
+                let es = scope[scope.length - 1] + name;
                 ret += '\nfunction ' + es + '(__p){' + content + 'return 1;}';
             }
 
             return ret;
         }
     });
-};
+}

@@ -11,3 +11,10 @@ Makefile
 .fecsrc
 config.js.example
 npm-debug.log
+dist
+package-lock.json
+explorations
+.idea
+benchmarks/browser.js
+coverage
+perf

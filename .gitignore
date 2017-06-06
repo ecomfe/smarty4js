@@ -1,7 +1,13 @@
 node_modules
 .DS_Store
-test
-examples/test.tpl
-examples/test.js
 .rvmrc
 npm-debug.log
+dist
+package-lock.json
+explorations
+node_modules
+._.DS_Store
+.idea
+benchmarks/browser.js
+coverage
+perf

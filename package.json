@@ -15,11 +15,8 @@
         "smarty compiler",
         "compile smarty"
     ],
-    "contributors": [
-        {
-            "name": "johnson",
-            "email": "zoumiaojiang@gmail.com"
-        }
+    "authors": [
+        "mj<zoumiaojiang@gmail.com>"
     ],
     "bugs": {
         "url": "https://github.com/ecomfe/smarty4js/issues"
@@ -27,9 +24,46 @@
     "bin": {
         "smarty4js": "./bin/smarty4js-cli"
     },
-    "main": "index",
+    "main": "./dist/index.js",
+    "files": [
+        "dist/smarty4js.js",
+        "dist/smarty4js.min.js",
+        "dist/smarty4js.min.js.map",
+        "dist/smarty4js.common.js",
+        "src"
+    ],
+    "scripts": {
+        "pretest": "npm run fixtures:ensure",
+        "test": "cross-env FORCE_COLOR=1 jest --coverage",
+        "test:watch": "jest --watch",
+        "posttest": "npm run lint",
+        "lint": "fecs --ignore=./.gitignore bin src test",
+        "build": "cross-env BABEL_ENV=production rollup -c",
+        "prepublish": "npm run build",
+        "fixtures:ensure": "cross-env NODE_ENV=development babel-node ./test/helpers/setupSmarty.js",
+        "fixtures:rebuild": "cross-env NODE_ENV=development babel-node ./test/helpers/cleanupSmarty.js && npm run fixtures:ensure"
+    },
     "devDependencies": {
-        "jison": "~0.4.15"
+        "babel-cli": "^6.24.0",
+        "babel-eslint": "^7.2.1",
+        "babel-jest": "^19.0.0",
+        "babel-plugin-external-helpers": "^6.22.0",
+        "babel-plugin-transform-object-rest-spread": "^6.23.0",
+        "babel-plugin-transform-runtime": "^6.23.0",
+        "babel-preset-env": "^1.3.2",
+        "babel-preset-latest": "^6.24.1",
+        "clone": "^2.1.1",
+        "cross-env": "^4.0.0",
+        "fecs": "^1.3.1",
+        "jest": "^19.0.2",
+        "rimraf": "^2.6.1",
+        "rollup": "^0.41.6",
+        "rollup-plugin-babel": "^2.7.1",
+        "rollup-plugin-node-resolve": "^3.0.0",
+        "sinon": "^2.1.0",
+        "stream-buffers": "^3.0.1",
+        "temp": "^0.8.3",
+        "wrap-ansi": "^2.1.0"
     },
     "repository": "git://github.com/ecomfe/smarty4js"
 }

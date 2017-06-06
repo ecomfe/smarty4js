@@ -1,15 +1,15 @@
 /**
  * @file php function module
- * @author johnson [zoumiaojiang@gmail.com]
+ * @author mj(zoumiaojiang@gmail.com)
  */
 
-var __nre = /[\.\(\)\[\]\{\}\+\-\*\?\|\^\$]/g;
+let __nre = /[\.\(\)\[\]\{\}\+\-\*\?\|\^\$]/g;
 
-module.exports = {
-    escape: function (str, f) {
-        var tmp = '';
-        function padnum (n, w, r, p) {
-            n = n.toString(r || 10); p = p || '0';
+export default {
+    escape(str, f) {
+        let tmp = '';
+        function padnum(n, w, r, p = '0') {
+            n = n.toString(r || 10);
             while (n.length < w) {
                 n = p + n;
             }
@@ -23,7 +23,7 @@ module.exports = {
                 return this.escape(str, 'html');
             }
             if (f === 'html' || f === 'htmlall') {
-                var obj = {'<': '&#60;', '>': '&#62;', '\'': '&#039;', '"': '&#034;', '&': '&#038;'};
+                let obj = {'<': '&#60;', '>': '&#62;', '\'': '&#039;', '"': '&#034;', '&': '&#038;'};
                 return str.replace(/['"<>&']/g, function (s) {
                     return obj[s];
                 });
@@ -41,25 +41,25 @@ module.exports = {
                 return str.replace(/@/g, ' [AT] ').replace(/\./g, ' [DOT] ');
             }
             if (f === 'hex') {
-                for (var i = 0, l = str.length; i < l; i++) {
+                for (let i = 0, l = str.length; i < l; i++) {
                     tmp += '%' + padnum(str.charCodeAt(i), 2, 16);
                 }
                 return tmp;
             }
             if (f === 'hexentity') {
-                for (i = 0, l = str.length; i < l; i++) {
-                    tmp += '&#x' + padnum(str.charCodeAt(i), 4, 16);
-                }
+                str.split('').forEach(s => {
+                    tmp += '&#x' + padnum(s, 4, 16);
+                });
                 return tmp;
             }
             if (f === 'decentity') {
-                for (i = 0, l = str.length; i < l; i++) {
-                    tmp += '&#' + str.charCodeAt(i) + ';';
-                }
+                str.split('').forEach(s => {
+                    tmp += '&#' + s + ';';
+                });
                 return tmp;
             }
             if (f === 'javascript') {
-                var map = {'\\': '\\\\', '\'': '\\\'', '"': '\\"', '\r': '\\r', '\n': '\\n', '</': '<\\/'};
+                let map = {'\\': '\\\\', '\'': '\\\'', '"': '\\"', '\r': '\\r', '\n': '\\n', '</': '<\\/'};
                 return str.replace(/[\\'"\r\n]|<\//g, function (s) {
                     return map[s];
                 });
@@ -68,86 +68,67 @@ module.exports = {
         return str;
     },
 
-    strip: function (str, s) {
+    strip(str, s) {
         return str.replace(/[\s\n\r\t]+/g, ((s && ('string' === typeof s)) ? s : ' '));
     },
 
-    isset: function (any) {
-        return any === undefined ? false : true;
+    isset(any) {
+        return any !== undefined;
     },
 
-    empty: function (obj) {
-        var n = 0;
-        for (var i in obj) {
-            if (obj.hasOwnProperty(i)) {
-                n++;
-            }
-        }
-        return (n > 0) ? false : true;
+    empty(obj) {
+        return Object.keys(obj).length === 0;
     },
 
-    count: function (obj) {
-        var n = 0;
-        for (var i in obj) {
-            if (obj.hasOwnProperty(i)) {
-                n++;
-            }
-        }
-        return n;
+    count(obj) {
+        return Object.keys(obj).length;
     },
 
-    sizeof: function (obj) {
-        var n = 0;
-        for (var i in obj) {
-            if (obj.hasOwnProperty(i)) {
-                n++;
-            }
-        }
-        return n;
+    sizeof(obj) {
+        return Object.keys(obj).length;
     },
 
-    time: function () {
-        var d = new Date();
+    time() {
+        let d = new Date();
         return ''
             + [d.getFullYear(), d.getMonth() + 1, d.getDate()].join('-') + ' '
             + [d.getHours(), d.getMinutes(), d.getSeconds()].join(':');
     },
 
-    capitalize: function (str, cnb) {
-        return str.replace(/\w+\s*/g, function (item) {
-            return /\d/g.test(item)
-                ? ((cnb === true) ? item.charAt(0).toUpperCase() + item.slice(1) : item)
-                : item.charAt(0).toUpperCase() + item.slice(1);
-        });
+    capitalize(str, cnb) {
+        return str.replace(/\w+\s*/g, item => (/\d/g.test(item)
+            ? ((cnb === true) ? item.charAt(0).toUpperCase() + item.slice(1) : item)
+            : item.charAt(0).toUpperCase() + item.slice(1))
+        );
     },
 
-    cat: function (a, b) {
+    cat(a, b) {
         return '' + a + b;
     },
 
-    'count_characters': function (str, iws) {
+    'count_characters'(str, iws) {
         return iws ? str.length : str.split(/\s*/).join('').length;
     },
 
-    'count_paragraphs': function (str, iws) {
+    'count_paragraphs'(str, iws) {
         return str.split(new RegExp('[\r\n]' + iws ? '' : '+')).length;
     },
-    'count_sentences': function (str) {
+    'count_sentences'(str) {
         return str.split('.').length;
     },
 
-    'count_words': function (str) {
+    'count_words'(str) {
         return str.split(/\w+\s*/).length - 1;
     },
 
-    'default': function (str, con) {
+    'default'(str, con) {
         return str !== undefined ? str : con;
     },
 
-    indent: function (str, num, repl) {
+    indent(str, num, repl) {
         function gotSpace(n) {
-            var s = '';
-            for (var i = 0; i < n; i++) {
+            let s = '';
+            for (let i = 0; i < n; i++) {
                 s += (repl ? '' + repl : ' ');
             }
             return s;
@@ -155,27 +136,27 @@ module.exports = {
         return ('number' === typeof num && num > 0) ? (gotSpace(num) + str) : (gotSpace(4) + str);
     },
 
-    lower: function (str) {
+    lower(str) {
         return ('' + str).toLowerCase();
     },
 
-    nl2br: function (str) {
+    nl2br(str) {
         return ('' + str).replace(/\n/g, '<br/>');
     },
 
-    'regex_replace': function (str, re, rs) {
+    'regex_replace'(str, re, rs) {
         return ('' + str).replace((new Function('return ' + re))(), rs);
     },
 
-    replace: function (str, s, o) {
+    replace(str, s, o) {
         return ('' + str).split(s).join(o);
     },
 
-    spacify: function (str, ss) {
+    spacify(str, ss) {
         return ss !== undefined ? str.split('').join(ss) : str.split('').join(' ');
     },
 
-    'string_format': function (num, f) {
+    'string_format'(num, f) {
         num = parseFloat('' + (num || 0), 10);
         return f !== undefined
             ? f === '%d'
@@ -184,42 +165,41 @@ module.exports = {
             : num;
     },
 
-    'strip_tags': function (str) {
+    'strip_tags'(str) {
         return ('' + str).replace(/<.*?>/g, '');
     },
 
-    truncate: function (str, num, s) {
+    truncate(str, num, s) {
         str = '' + str;
         return num >= str.length ? str : str.substr(0, ((num >= 0) ? num : 80)) + (s ? '' + s : '...');
     },
 
-    upper: function (str) {
+    upper(str) {
         return ('' + str).toUpperCase();
     },
 
-    wordwrap: function (str, num, s) {
+    wordwrap(str, num, s) {
         str = ('' + str).split('');
         num = (num >= 0 ? num : 80);
-        for (var i = 0, l = str.length; i < l; i++) {
+        for (let i = 0, l = str.length; i < l; i++) {
             if (i % num === 0 && i !== 0) {
                 str[i] = str[i] + (s ? '' + s : '\n');
             }
         }
         return str.join('');
     },
-    'is_array': function (obj) {
+    'is_array'(obj) {
         return ({}.toString.call(obj) === '[object Object]' || {}.toString.call(obj) === '[object Array]');
     },
 
-    ceil: function (num) {
+    ceil(num) {
         return Math.ceil(parseFloat((num || 0), 10));
     },
 
-    range: function (a, b, step) {
-        var arr = [];
-        step = step || 1;
+    range(a, b, step = 1) {
+        let arr = [];
         if (typeof a === 'number' && typeof b === 'number' && a < b) {
-            for (var i = a; i <= b; i += step) {
+            for (let i = a; i <= b; i += step) {
                 arr[(i - a) / step] = i;
             }
         }
@@ -227,7 +207,7 @@ module.exports = {
             a = ('' + a).charCodeAt(0);
             b = ('' + b).charCodeAt(0);
             if (a < b) {
-                for (i = a; i <= b; i += step) {
+                for (let i = a; i <= b; i += step) {
                     arr[(i - a) / step] = String.fromCharCode('' + i);
                 }
             }
@@ -235,138 +215,124 @@ module.exports = {
         return arr;
     },
 
-    'in_array': function (any, array) {
-        return array[any] ? true : false;
+    'in_array'(any, array) {
+        return !!array[any];
     },
 
-    explode: function (s, str) {
-        var obj = {};
-        var arr = str.split(s);
-        for (var i = 0, l = arr.length; i < l; i++) {
+    explode(s, str) {
+        let obj = {};
+        let arr = str.split(s);
+        for (let i = 0, l = arr.length; i < l; i++) {
             obj['__a' + i] = arr[i];
         }
         return obj;
     },
-    implode: function (s, obj) {
-        var arr = [];
-        for (var p in obj) {
-            if (obj.hasOwnProperty(p)) {
-                arr.push(obj[p]);
-            }
-        }
+    implode(s, obj) {
+        let arr = [];
+        Object.keys(obj).forEach(p => {
+            arr.push(obj[p]);
+        });
         return arr.join(s);
     },
-    join: function (s, obj) {
-        var arr = [];
-        for (var p in obj) {
-            if (obj.hasOwnProperty(p)) {
-                arr.push(obj[p]);
-            }
-        }
+    join(s, obj) {
+        let arr = [];
+        Object.keys(obj).forEach(p => {
+            arr.push(obj[p]);
+        });
         return arr.join(s);
     },
-    array: function () {
+    array() {
         return [];
     },
-    'array_unique': function (array) {
-        var obj = {};
-        var ret = {};
-        for (var p in array) {
-            if (array.hasOwnProperty(p) && !obj[array[p]]) {
+    'array_unique'(array) {
+        let obj = {};
+        let ret = {};
+        Object.keys(array).forEach(p => {
+            if (!obj[array[p]]) {
                 obj[array[p]] = true;
                 ret[p] = array[p];
             }
-        }
+        });
         return ret;
     },
-    'array_sum': function (array) {
-        var sum = 0;
-        for (var p in array) {
-            if (array.hasOwnProperty(p) && typeof array[p] === 'number') {
+    'array_sum'(array) {
+        let sum = 0;
+        Object.keys(array).forEach(p => {
+            if (typeof array[p] === 'number') {
                 sum += array[p];
             }
-        }
+        });
         return sum;
     },
 
-    'array_product': function (array) {
-        var sum = 1;
-        for (var p in array) {
-            if (array.hasOwnProperty(p) && typeof array[p] === 'number') {
+    'array_product'(array) {
+        let sum = 1;
+        Object.keys(array).forEach(p => {
+            if (typeof array[p] === 'number') {
                 sum *= array[p];
             }
-        }
+        });
         return sum;
     },
 
-    'array_merge': function () {
-        var arrs = Array.prototype.slice.call(arguments);
-        var obj = {};
-        var ind = 0;
-        for (var i = 0, l = arrs.length; i < l; i++) {
-            var arr = arrs[i];
-            for (var p in arr) {
-                if (arr.hasOwnProperty(p)) {
-                    obj[(p.indexOf('__a') > -1) ? ('__a' + ind++) : p] = arr[p];
-                }
-            }
-        }
+    'array_merge'(...args) {
+        let obj = {};
+        let ind = 0;
+        args.forEach(arr => {
+            Object.keys(arr).forEach(p => {
+                obj[(p.indexOf('__a') > -1) ? ('__a' + ind++) : p] = arr[p];
+            });
+        });
         return obj;
     },
 
-    'array_merge_recursive': function () { // TODO:
-        var arrs = Array.prototype.slice.call(arguments);
-        var obj = {};
-        var ind = 0;
-        for (var i = 0, l = arrs.length; i < l; i++) {
-            var arr = arrs[i];
-            for (var p in arr) {
-                if (arr.hasOwnProperty(p)) {
-                    obj[(p.indexOf('__a') > -1) ? ('__a' + ind++) : p] = arr[p];
-                }
-            }
-        }
+    'array_merge_recursive'(...args) { // TODO:
+        let obj = {};
+        let ind = 0;
+        args.forEach(arr => {
+            Object.keys(arr).forEach(p => {
+                obj[(p.indexOf('__a') > -1) ? ('__a' + ind++) : p] = arr[p];
+            });
+        });
         return obj;
     },
 
-    'array_keys': function (obj) {
-        var t = [];
-        for (var p in obj) {
-            if (obj.hasOwnProperty(p)) {
-                t.push(p.replace('__a', ''));
-            }
-        }
+    'array_keys'(obj) {
+        let t = [];
+        Object.keys(obj).forEach(p => {
+            t.push(p.replace('__a', ''));
+        });
         return t;
     },
 
-    'array_key_exists': function (any, array) {
-        return !array[any] === undefined ? true : false;
+    'array_key_exists'(any, array) {
+        return !array[any] === undefined;
     },
 
     // string method
-    addcslashes: function (str, c) {
+    addcslashes(str, c) {
         return ('' + str).split(c).join('\\' + c);
     },
 
-    stripcslashes: function (str) {
+    stripcslashes(str) {
         return ('' + str).replace(/\\/, '');
     },
 
-    addslashes: function (str) {
+    addslashes(str) {
         return ('' + str).replace(/[\'\"\\]/g, function (s) {
             return '\\' + s;
         });
     },
 
-    stripslashes: function (str) {
+    stripslashes(str) {
         return ('' + str).replace(/(\\\')|(\\\")|(\\\\)/g, function (s) {
             return s.replace('\\', '');
         });
     },
 
     // rtrim alias
-    chop: function (str, clist) {
-        var res = (clist !== undefined)
+    chop(str, clist) {
+        let res = (clist !== undefined)
             ? '[' + ('' + clist).replace(__nre, function (s) {
                 return '\\' + s;
             }) + ']+$'
@@ -374,21 +340,17 @@ module.exports = {
         return ('' + str).replace(new RegExp(res), '');
     },
 
-    chr: function (asc) {
+    chr(asc) {
         return String.fromCharCode('' + asc);
     },
 
-    'chunk_split': function (str, len, end) {
+    'chunk_split'(str, len = 0, end = '') {
         str = '' + str;
-        len = len || 0;
-        end = end || '';
-        return len === 0 ? str : str.replace(new RegExp('.{' + len + '}', 'g'), function (s) {
-            return s + end;
-        });
+        return len === 0 ? str : str.replace(new RegExp('.{' + len + '}', 'g'), s => s + end);
     },
 
-    ltrim: function (str, clist) {
-        var res = (clist !== undefined)
+    ltrim(str, clist) {
+        let res = (clist !== undefined)
             ? '^[' + ('' + clist).replace(__nre, function (s) {
                 return '\\' + s;
             }) + ']+'
@@ -396,17 +358,15 @@ module.exports = {
         return ('' + str).replace(new RegExp(res), '');
     },
 
-    rtrim: function (str, clist) {
-        var res = (clist !== undefined)
-            ? '[' + ('' + clist).replace(__nre, function (s) {
-                return '\\' + s;
-            }) + ']+$'
+    rtrim(str, clist) {
+        let res = (clist !== undefined)
+            ? '[' + ('' + clist).replace(__nre, s => '\\' + s) + ']+$'
             : '[\\0\\t\\n\\r\\s]+$';
         return ('' + str).replace(new RegExp(res), '');
     },
 
-    trim: function (str, clist) {
-        var tmps = (clist !== undefined)
+    trim(str, clist) {
+        let tmps = (clist !== undefined)
             ? ('' + clist).replace(__nre, function (s) {
                 return '\\' + s;
             })
@@ -414,47 +374,47 @@ module.exports = {
         return ('' + str).replace(new RegExp('(^[' + tmps + ']+)|([' + tmps + ']+$)', 'g'), '');
     },
 
-    ord: function (str) {
+    ord(str) {
         return ('' + str).charCodeAt(0);
     },
 
-    'parse_str': function (str) {
-        var obj = {};
-        var arr = ('' + str).split('&');
-        for (var i = 0, l = arr.length; i < l; i++) {
-            var item = arr[i];
+    'parse_str'(str) {
+        let obj = {};
+        let arr = ('' + str).split('&');
+        for (let i = 0, l = arr.length; i < l; i++) {
+            let item = arr[i];
             item = item.indexOf('%') > -1 ? decodeURI(item) : item;
-            var pi = item.split('=');
+            let pi = item.split('=');
             obj[pi[0]] = pi[1] || '';
         }
         return obj;
     },
 
-    print: function () {
-        var args = Array.prototype.slice.call(arguments);
-        var s = '';
-        for (var i = 0, l = args.length; i < l; i++) {
-            var ts = args[i];
+    print(...args) {
+        let s = '';
+        for (let i = 0, l = args.length; i < l; i++) {
+            let ts = args[i];
             s += ts ? ts : '';
         }
         return s;
     },
 
-    quotemeta: function (str) {
+    quotemeta(str) {
         return ('' + str).replace(__nre, function (s) {
             return '\\' + s;
         });
     },
 
-    'str_pad': function (str, len, pad, type) {
-        var to = {'STR_PAD_RIGHT': 0, 'STR_PAD_LEFT': 1, 'STR_PAD_BOTH': 2};
-        var par = '';
-        var t = 0;
+    'str_pad'(str, len = 0, pad = '', type = 'STR_PAD_RIGHT') {
+        let to = {
+            STR_PAD_RIGHT: 0,
+            STR_PAD_LEFT: 1,
+            STR_PAD_BOTH: 2
+        };
+        let par = '';
+        let t = 0;
         str = '' + str;
-        var ret = str;
-        len = len || 0;
-        pad = pad || '';
-        type = type || 'STR_PAD_RIGHT';
+        let ret = str;
         if (len > str.length) {
             if (to[type] !== 2) {
                 t = (len - str.length) / pad.length;
@@ -474,24 +434,24 @@ module.exports = {
         return ret;
     },
 
-    'str_repeat': function (str, rn) {
-        var all = '';
+    'str_repeat'(str, rn) {
+        let all = '';
         while (rn--) {
             all += str;
         }
         return all;
     },
 
-    'str_split': function (str, len) {
-        var arr = [];
+    'str_split'(str, len = 0) {
+        let arr = [];
         str = '' + str;
-        len = len || 0;
         if (len !== 0) {
-            var mats = str.match(new RegExp('.{' + len + '}', 'g'));
-            for (var i = 0, l = mats.length; i < l; i++) {
+            let mats = str.match(new RegExp('.{' + len + '}', 'g'));
+            let l = mats.length;
+            for (let i = 0; i < l; i++) {
                 arr.push(mats[i]);
             }
-            var lef = str.slice(l * len);
+            let lef = str.slice(l * len);
             if (lef) {
                 arr.push(lef);
             }
@@ -502,27 +462,27 @@ module.exports = {
         return arr;
     },
 
-    strcmp: function (str1, str2) {
+    strcmp(str1, str2) {
         str1 = '' + str1, str2 = '' + str2;
         return str1 === str2 ? 0 : (str1 > str2 ? 1 : -1);
     },
 
-    strcasecmp: function (str1, str2) {
+    strcasecmp(str1, str2) {
         str1 = ('' + str1).toLowerCase(), str2 = '' + str2.toLowerCase();
         return str1 === str2 ? 0 : (str1 > str2 ? 1 : -1);
     },
 
-    strchr: function (str, search) {
+    strchr(str, search) {
         str =  '' + str;
         return str.slice(str.indexOf((typeof search === 'number' ? String.fromCharCode(search) : ('' + search))));
     },
 
-    strstr: function (str, search) {
+    strstr(str, search) {
         str =  '' + str;
         return str.slice(str.indexOf((typeof search === 'number' ? String.fromCharCode(search) : ('' + search))));
     },
 
-    stristr: function (str, search) {
+    stristr(str, search) {
         str = '' + str;
         return str.slice(str.toLowerCase().indexOf(
             (typeof search === 'number'
@@ -531,139 +491,137 @@ module.exports = {
         ));
     },
 
-    stripos: function (str, find, start) {
-        str =  '' + str, start = start || 0;
+    stripos(str, find, start = 0) {
+        str =  '' + str;
         return str.toLowerCase().indexOf(('' + find).toLowerCase(), start);
     },
 
-    strpos: function (str, find, start) {
-        str =  '' + str, start = start || 0;
+    strpos(str, find, start = 0) {
+        str =  '' + str;
         return str.indexOf(('' + find), start);
     },
 
-    strlen: function (str) {
+    strlen(str) {
         return ('' + str).length;
     },
 
-    strrchr: function (str, search) {
+    strrchr(str, search) {
         str =  '' + str;
         return str.slice(str.lastIndexOf((typeof search === 'number' ? String.fromCharCode(search) : ('' + search))));
     },
 
-    strrev: function (str) {
+    strrev(str) {
         return ('' + str).split('').reverse().join('');
     },
 
-    strripos: function (str, find, start) {
-        str =  '' + str, start = start || 0;
+    strripos(str, find, start = 0) {
+        str =  '' + str;
         return str.toLowerCase().lastIndexOf(('' + find).toLowerCase(), start);
     },
 
-    strrpos: function (str, find, start) {
-        str =  '' + str, start = start || 0;
+    strrpos(str, find, start = 0) {
+        str =  '' + str;
         return str.lastIndexOf(('' + find), start);
     },
 
-    strtolower: function (str) {
+    strtolower(str) {
         return ('' + str).toLowerCase();
     },
 
-    strtoupper: function (str) {
+    strtoupper(str) {
         return ('' + str).toUpperCase();
     },
 
-    substr: function (str, start, len) {
+    substr(str, start = 0, len) {
         str = '' + str;
-        start = start || 0;
         len = (len === undefined || typeof len !== 'number') ? -1 : len;
         return str.substring(start, (len === -1 ? str.length : (start + len)));
     },
 
-    'substr_count': function (str, substr, start, len) {
+    'substr_count'(str, substr, start = 0, len) {
         str = '' + str;
-        start = start || 0;
         len = (len === undefined || typeof len !== 'number') ? -1 : len;
         return str.substring(start, (len === -1 ? str.length : (start + len))).split(substr).length - 1;
     },
 
-    ucfirst: function (str) {
+    ucfirst(str) {
         str = '' + str;
         return str.charAt(0).toUpperCase() + str.slice(1);
     },
 
-    ucwords: function (str) {
+    ucwords(str) {
         return ('' + str).replace(/\w+\s*/g, function (item) {
             return /\d/g.test(item) ? item : item.charAt(0).toUpperCase() + item.slice(1);
         });
     },
 
-    rawurldecode: function (str) {
+    rawurldecode(str) {
         return decodeURIComponent('' + str);
     },
 
-    rawurlencode: function (url) {
+    rawurlencode(url) {
         return encodeURIComponent('' + url);
     },
 
-    urldecode: function (str) {
+    urldecode(str) {
         return decodeURI('' + str);
     },
 
-    urlencode: function (url) {
+    urlencode(url) {
         return encodeURI('' + url);
     },
 
-    // varibal function
+    // letibal function
 
-    'is_bool': function (bool) {
-        return (bool === true || bool === false) ? true : false;
+    'is_bool'(bool) {
+        return bool === true || bool === false;
     },
 
-    floatval: function (str) {
+    floatval(str) {
         return parseFloat('' + str, 10);
     },
 
-    intval: function (str) {
+    intval(str) {
         return parseInt('' + str, 10);
     },
 
-    'is_float': function (f) {
-        return (typeof f === 'number' && parseInt(f, 10) !== f) ? true : false;
+    'is_float'(f) {
+        return typeof f === 'number' && parseInt(f, 10) !== f;
     },
 
-    'is_real': function (f) {
-        return (typeof f === 'number' && parseInt(f, 10) !== f) ? true : false;
+    'is_real'(f) {
+        return typeof f === 'number' && parseInt(f, 10) !== f;
     },
 
-    'is_int': function (i) {
-        return (typeof i === 'number' && parseInt(i, 10) === i) ? true : false;
+    'is_int'(i) {
+        return typeof i === 'number' && parseInt(i, 10) === i;
     },
 
-    'is_integer': function (i) {
-        return (typeof i === 'number') ? true : false;
+    'is_integer'(i) {
+        return typeof i === 'number';
     },
 
-    'is_object': function (o) {
+    'is_object'(o) {
         return {}.toString.call(o) === '[object Object]';
     },
 
-    'is_callable': function (o) {
-        return (typeof o === 'function') ? true : false;
+    'is_callable'(o) {
+        return typeof o === 'function';
     },
 
-    'is_string': function (s) {
-        return (typeof s === 'string') ? true : false;
+    'is_string'(s) {
+        return typeof s === 'string';
     },
 
-    'is_numeric': function (a) {
-        return (typeof a === 'number') ? true : false;
+    'is_numeric'(a) {
+        return typeof a === 'number';
     },
 
-    strval: function (any) {
+    strval(any) {
         return (any !== undefined && any.toString) ? any.toString() : '';
     },
 
-    'var_dump': function (any) {
+    'let_dump'(any) {
         function isArray(o) {
             return {}.toString.call(o) === '[object Array]';
         }
@@ -671,31 +629,29 @@ module.exports = {
             return {}.toString.call(o) === '[object Object]';
         }
         function isOA(o) {
-            return (isArray(o) || isObj(o)) ? true : false;
+            return isArray(o) || isObj(o);
         }
         function isRealArr(o) {
-            for (var p in o) {
-                if (o.hasOwnProperty(p) && p.indexOf('__a') !== 0) {
+            Object.keys(o).forEach(p => {
+                if (p.indexOf('__a') !== 0) {
                     return false;
                 }
-            }
+            });
             return true;
         }
         function pa(o) {
-            var type = (isArray(o) || (isRealArr(o) && isObj(o))) ? 0 : ((isObj(o) && !isRealArr(o)) ? 1 : 2);
-            var __enc;
+            let type = (isArray(o) || (isRealArr(o) && isObj(o))) ? 0 : ((isObj(o) && !isRealArr(o)) ? 1 : 2);
+            let __enc;
             if (type === 0 || type === 1) {
                 __enc = type === 0 ? '[' : '{';
-                for (var p in o) {
-                    if (o.hasOwnProperty(p)) {
-                        var to = o[p];
-                        __enc += (type === 0
-                            ? ''
-                            : ('"' + p + '":')) + (isOA(to)
-                                ? pa(to)
-                                : (typeof to === 'string' ? '"' + to + '"' : to)) + ',';
-                    }
-                }
+                Object.keys(o).forEach(p => {
+                    let to = o[p];
+                    __enc += (type === 0
+                        ? ''
+                        : ('"' + p + '":')) + (isOA(to)
+                            ? pa(to)
+                            : (typeof to === 'string' ? '"' + to + '"' : to)) + ',';
+                });
                 __enc = __enc.slice(0, __enc.length - 1) + (type === 0 ? ']' : '}');
             }
             else {
@@ -706,11 +662,10 @@ module.exports = {
         return (isArray(any) || isObj(any)) ? pa(any).replace(/__a/g, '') : (any || '');
     },
 
-    echo: function () {
-        var args = Array.prototype.slice.call(arguments);
-        var s = '';
-        for (var i = 0, l = args.length; i < l; i++) {
-            var ts = args[i];
+    echo(...args) {
+        let s = '';
+        for (let i = 0, l = args.length; i < l; i++) {
+            let ts = args[i];
             s += ts ? ts : '';
         }
         return s;
@@ -718,183 +673,179 @@ module.exports = {
 
     // math
 
-    abs: function (num) {
+    abs(num) {
         return Math.abs(num);
     },
 
-    acos: function (deg) {
+    acos(deg) {
         return Math.acos(deg);
     },
 
-    acosh: function (deg) {
+    acosh(deg) {
         return Math.acosh(deg);
     },
 
-    asin: function (deg) {
+    asin(deg) {
         return Math.asin(deg);
     },
 
-    asinh: function (deg) {
+    asinh(deg) {
         return Math.asinh(deg);
     },
 
-    atan2: function (x, y) {
+    atan2(x, y) {
         return Math.atan2(x, y);
     },
 
-    atan: function (p) {
+    atan(p) {
         return Math.atan(p);
     },
 
-    atanh: function (x) {
+    atanh(x) {
         return Math.atanh(x);
     },
 
-    cos: function (x) {
+    cos(x) {
         return Math.cos(x);
     },
 
-    sin: function (x) {
+    sin(x) {
         return Math.sin(x);
     },
 
-    tan: function (x) {
+    tan(x) {
         return Math.tan(x);
     },
 
-    cosh: function (x) {
+    cosh(x) {
         return Math.cosh(x);
     },
 
-    sinh: function (x) {
+    sinh(x) {
         return Math.sinh(x);
     },
 
-    tanh: function (x) {
+    tanh(x) {
         return Math.tanh(x);
     },
 
-    dexbin: function (num) {
+    dexbin(num) {
         return num.toString(2);
     },
 
-    dechex: function (num) {
+    dechex(num) {
         return num.toString(16);
     },
 
-    decoct: function (num) {
+    decoct(num) {
         return num.toString(8);
     },
 
-    deg2rad: function (deg) {
+    deg2rad(deg) {
         return deg * Math.PI / 180;
     },
 
-    rad2deg: function (rad) {
+    rad2deg(rad) {
         return rad * 180 / Math.PI;
     },
-    exp: function (x) {
+    exp(x) {
         return Math.exp(x);
     },
 
-    expm1: function (x) {
+    expm1(x) {
         return Math.expm1(x);
     },
 
-    floor: function (x) {
+    floor(x) {
         return Math.floor(x);
     },
 
-    fmod: function (x, y) {
+    fmod(x, y) {
         return (typeof x === 'number' && typeof y === 'number') && x % y;
     },
 
-    hexdec: function (hex) {
+    hexdec(hex) {
         return parseInt('' + hex, 16);
     },
 
-    octdec: function (oct) {
+    octdec(oct) {
         return parseInt('' + oct, 8);
     },
 
-    hypot: function (x, y) {
+    hypot(x, y) {
         return (typeof x === 'number' && typeof y === 'number') && Math.sqrt(x * x + y * y);
     },
 
-    'is_infinite': function (x) {
-        return (('' + x) === 'Infinity') ? true : false;
+    'is_infinite'(x) {
+        return ('' + x) === 'Infinity';
     },
 
-    'is_nan': function (x) {
-        return (('' + x) === 'NaN') ? true : false;
+    'is_nan'(x) {
+        return ('' + x) === 'NaN';
     },
 
-    'lcg_value': function () {
+    'lcg_value'() {
         return Math.random();
     },
 
-    log10: function (x) {
+    log10(x) {
         return Math.log10(x);
     },
 
-    log1p: function (x) {
+    log1p(x) {
         return Math.log1p(x);
     },
 
-    log: function (x) {
+    log(x) {
         return Math.log(x);
     },
 
-    max: function () {
-        var arrs = Array.prototype.slice.call(arguments);
-        var obj = (typeof arrs[0] === 'object') ? arrs[0] : arrs;
-        var max = obj[0];
-        for (var p in obj) {
-            if (obj.hasOwnProperty(p) && obj[p] > max) {
+    max(...args) {
+        let obj = (typeof args[0] === 'object') ? args[0] : args;
+        let max = obj[0];
+        Object.keys(obj).forEach(p => {
+            if (obj[p] > max) {
                 max = obj[p];
             }
-        }
+        });
         return max;
     },
 
-    min: function () {
-        var arrs = Array.prototype.slice.call(arguments);
-        var obj = (typeof arrs[0] === 'object') ? arrs[0] : arrs;
-        var min = obj[0];
-        for (var p in obj) {
-            if (obj.hasOwnProperty(p) && obj[p] < min) {
-                min = obj[p];
-            }
-        }
+    min(...args) {
+        let obj = (typeof args[0] === 'object') ? args[0] : args;
+        let min = obj[0];
+        Object.keys(obj).forEach(p => {
+            min = obj[p];
+        });
         return min;
     },
 
-    pi: function () {
+    pi() {
         return Math.PI;
     },
 
-    pow: function (x, y) {
+    pow(x, y) {
         return (typeof x === 'number' && typeof y === 'number') ? Math.pow(x, y) : false;
     },
 
-    round: function (x) {
+    round(x) {
         return Math.round(x);
     },
 
-    sqrt: function (x) {
+    sqrt(x) {
         return Math.sqrt(x);
     },
 
     // common php method
-    uniqid: function (prefix) {
+    uniqid(prefix) {
         return (prefix || '') + (new Date()).getTime();
     },
 
-    highlight: function (str, type) {
+    highlight(str, type) {
         return str;
     },
 
-    'json_encode': function (obj) {
+    'json_encode'(obj) {
         function isArray(o) {
             return {}.toString.call(o) === '[object Array]';
         }
@@ -905,55 +856,54 @@ module.exports = {
             return {}.toString.call(o) === '[object Date]';
         }
         function isOAD(o) {
-            return (isArray(o) || isObj(o) || isDate(o)) ? true : false;
+            return isArray(o) || isObj(o) || isDate(o);
         }
         function isRealArr(o) {
-            for (var p in o) {
-                if (o.hasOwnProperty(p) && p.indexOf('__a') !== 0) {
+            Object.keys(o).forEach(p => {
+                if (p.indexOf('__a') !== 0) {
                     return false;
                 }
-            }
+            });
             return true;
         }
-        
+
         function pa(o) {
-            var type = (isArray(o) || (isRealArr(o) && isObj(o))) ? 0 : ((isObj(o) && !isRealArr(o)) ? 1 : 2);
-            var __enc = type === 0 ? '[' : '{';
-            for (var p in o) {
-                if (o.hasOwnProperty(p)) {
-                    var to = o[p];
-                    __enc += (type === 0 ? '' : ('"' + p + '":')) + (isOAD(to)
-                        ? (isDate(to) ? ('"'+ to +'"'): pa(to))
-                        : (typeof to === 'string' ? '"' + to.replace(/\"/g, '\\"') + '"' : to)) + ',';
-                }
-            }
+            let type = (isArray(o) || (isRealArr(o) && isObj(o))) ? 0 : ((isObj(o) && !isRealArr(o)) ? 1 : 2);
+            let __enc = type === 0 ? '[' : '{';
+            Object.keys(o).forEach(p => {
+                let to = o[p];
+                __enc += (type === 0 ? '' : ('"' + p + '":')) + (isOAD(to)
+                    ? (isDate(to) ? ('"' + to + '"') : pa(to))
+                    : (typeof to === 'string' ? '"' + to.replace(/\"/g, '\\"') + '"' : to)) + ',';
+            });
             __enc = (__enc.length <= 1 ? __enc : __enc.slice(0, __enc.length - 1)) + (type === 0 ? ']' : '}');
             return __enc;
         }
         return pa(obj).replace(/__a/g, '');
     },
 
-    date_format: function (time, format) {
+    date_format(time, format) {
         time = (time instanceof Date) ? time : new Date(+time);
         if (format) {
-            var o = {
+            let o = {
                 '\%m': time.getMonth() + 1,
                 '\%d': time.getDate(),
                 '\%H': time.getHours(),
                 '\%M': time.getMinutes(),
                 '\%S': time.getSeconds(),
-                '\%s': time.getMilliseconds() 
-            }
+                '\%s': time.getMilliseconds()
+            };
+
             if (/(\%Y)/.test(format)) {
                 format = format.replace(RegExp.$1, (time.getFullYear() + ''));
             }
-            for (var k in o) {
-                if (o.hasOwnProperty(k) && new RegExp('(' + k + ')').test(format)) {
+            Object.keys(o).forEach(k => {
+                if (new RegExp('(' + k + ')').test(format)) {
                     format = format.replace(RegExp.$1, RegExp.$1.length === 1
                         ? o[k]
                         : ('00' + o[k]).substr(('' + o[k]).length));
                 }
-            }
+            });
         }
         else {
             format = time.toDateString();
@@ -961,7 +911,7 @@ module.exports = {
         return format;
     },
 
-    'json_decode': function (json) {
+    'json_decode'(json) {
         // TODO
     }
 };

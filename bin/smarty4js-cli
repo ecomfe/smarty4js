@@ -3,7 +3,7 @@
 var path = require('path');
 var fs = require('fs');
 
-var Smarty = require('../index');
+var Smarty = require('../dist/index');
 var utils = require('../lib/utils');
 
 var args = process.argv.slice(2);

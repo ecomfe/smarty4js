@@ -1,27 +1,29 @@
 /**
  * @file render of php_function and smarty_tag_function
- * @author johnson [zoumiaojiang@gmail.com]
+ * @author mj(zoumiaojiang@gmail.com)
  */
 
-var utils = require('../utils');
 
-module.exports = function (Renderer) {
+import utils from '../utils';
+
+export default function (Renderer) {
 
     utils.mixin(Renderer.prototype, {
 
         /**
          * enter of all functions
+         *
          * @param  {Object} node  ast node
          * @param  {number|boolean} f     is literal(2) or echo result(1)?
          * @return {string}       render result
          */
-        _getFunction: function (node, f) {
+        _getFunction(node, f) {
 
             // exclued 'config_load, php, include_php'
-            var me = this;
-            var name = node.name;
-            var ret;
-            var fobj = me.engine.phpfunc;
+            let me = this;
+            let name = node.name;
+            let ret;
+            let fobj = me.engine.phpfunc;
             if (fobj[name] && node.params) {
                 if (f === true) {
                     ret = utils.p(me._getPhpFunc(node));
@@ -75,14 +77,15 @@ module.exports = function (Renderer) {
          * {%function name=example ... %}
          *     ...
          * {%/function%}
+         *
          * @param  {Object} node  ast node
          * @return {string}       render result
          */
-        _getFunc: function (node) {
-            var me = this;
-            var func = '__func' + utils.getGUID();
-            var funcName;
-            var tmparr = [];
+        _getFunc(node) {
+            let me = this;
+            let func = '__func' + utils.getGUID();
+            let funcName;
+            let tmparr = [];
 
             node.attrs.forEach(function (nod, index) {
                 if (nod.value) {
@@ -103,16 +106,17 @@ module.exports = function (Renderer) {
 
             /**
              * get default params of smarty-tag function
+             *
              * @param  {string} func            function context scope
              * @param  {Array<Object>} arr      array of ast node(params)
              * @return {string}                 render result
              */
             function getDefaultParams(func, arr) {
-                var tmps = '';
+                let tmps = '';
                 arr.forEach(function (node) {
                     if (node.value) {
-                        var p = node.key.value;
-                        var vara = me._getExpr(node.value);
+                        let p = node.key.value;
+                        let vara = me._getExpr(node.value);
                         tmps += '\n' + func  + '.' + p + '=__v(__p.' + p + ',' + vara + ');';
                     }
                 });
@@ -120,11 +124,11 @@ module.exports = function (Renderer) {
                 return tmps;
             }
 
-            var ret = '\n__func["__fn__' + funcName + '"]=function(__p){';
-            var fc = utils.getGUID();
+            let ret = '\n__func["__fn__' + funcName + '"]=function(__p){';
+            let fc = utils.getGUID();
             me.ctxScope.push(func);
-            ret += 'for(var __ in __p){if(__p.hasOwnProperty(__)&&__da[__]==undefined){__da[__]=__p[__];}}\n'
-                + 'var ' + func + ' = __p,__' + fc + 'h="";'
+            ret += 'for(let __ in __p){if(__p.hasOwnProperty(__)&&__da[__]==undefined){__da[__]=__p[__];}}\n'
+                + 'let ' + func + ' = __p,__' + fc + 'h="";'
                 + getDefaultParams(func, tmparr)
                 + me._init(node.block).replace(/__h/g, '__' + fc + 'h')
                 + 'return __' + fc + 'h;\n};';
@@ -135,18 +139,19 @@ module.exports = function (Renderer) {
         /**
          * call function
          * just like ({%a_function_name attrK=attrV ...%})
+         *
          * @param  {Object} node    ast node
          * @param  {number} flag    is literal or echo?
          * @return {string}         render result
          */
-        _callFunc: function (node, flag) {
-            var me = this;
-            var funcName = node.name;
-            var attrs = node.attrs;
-            var ps = [];
-            var ret = '';
-            var begin = (flag === 2 ? '' : '__h+=');
-            var end = (flag === 2 ? '' : ';');
+        _callFunc(node, flag) {
+            let me = this;
+            let funcName = node.name;
+            let attrs = node.attrs;
+            let ps = [];
+            let ret = '';
+            let begin = (flag === 2 ? '' : '__h+=');
+            let end = (flag === 2 ? '' : ';');
             if (funcName) {
                 if (attrs) {
                     if (attrs.length === 0) {
@@ -169,11 +174,12 @@ module.exports = function (Renderer) {
         /**
          * render strip function
          * {%strip%} ... {%/strip%}
+         *
          * @param  {Object} node    ast node
          * @return {string}         render result
          */
-        _getStrip: function (node) {
-            var block = node.block;
+        _getStrip(node) {
+            let block = node.block;
             return this._init(block)
                 .replace(/\"\s+/g, '" ')
                 .replace(/\s+\"/g, ' "')
@@ -186,27 +192,29 @@ module.exports = function (Renderer) {
          * {%literal%} ... {%/literal%}
          * don't suggest to use single '{' and '}' to be limiter
          * so this function is smarty adapter
+         *
          * @param  {Object} node   ast node
          * @return {string}        render result
          */
-        _getFuncLiteral: function (node) {
-            var block = node.block;
+        _getFuncLiteral(node) {
+            let block = node.block;
             return this._init(block);
         },
 
         /**
          * render call function..
          * {%call k1=v1 k2=v2 ...%}
+         *
          * @param  {Object} node     ast node
          * @return {string}          render result
          */
-        _getCallFunc: function (node) {
-            var me = this;
-            var ret = '';
-            var attrs = node.attrs;
-            var name = '';
-            var params = '{';
-            var assign;
+        _getCallFunc(node) {
+            let me = this;
+            let ret = '';
+            let attrs = node.attrs;
+            let name = '';
+            let params = '{';
+            let assign;
             if (attrs) {
                 attrs.forEach(function (attr) {
                     if ((attr.key.value === 'name' || !attr.value)) {
@@ -235,23 +243,24 @@ module.exports = function (Renderer) {
         /**
          * append function
          * {%append var=xxx index=xxx value=xxx%}
+         *
          * @param  {Object} node    ast node
          * @return {string}         render result
          */
-        _getAppend: function (node) {
-            var me = this;
-            var ret = '';
-            var attrs = node.attrs;
-            var vara;
-            var ind = '';
-            var value;
+        _getAppend(node) {
+            let me = this;
+            let ret = '';
+            let attrs = node.attrs;
+            let vara;
+            let ind = '';
+            let value;
 
             if (attrs) {
-                attrs.forEach(function (attr, index) {
-                    var key = attr.key.value;
-                    var valObj = attr.value;
+                attrs.forEach((attr, index) => {
+                    let key = attr.key.value;
+                    let valObj = attr.value;
                     if ((key === 'var' || (!valObj && index === 0))) {
-                        var varaNode = valObj ? valObj : attr.key;
+                        let varaNode = valObj ? valObj : attr.key;
                         if (varaNode.type === 'STR') {
                             vara = me._getStr(varaNode);
                         }
@@ -260,7 +269,7 @@ module.exports = function (Renderer) {
                         value = me._getExpr(valObj ? valObj : attr.key);
                     }
                     if (key === 'index') {
-                        var tmp = valObj.value;
+                        let tmp = valObj.value;
                         ind = typeof tmp === 'string' ? ('"' + tmp + '"') : me._getExpr(tmp);
                     }
                 });
@@ -278,26 +287,27 @@ module.exports = function (Renderer) {
         /**
          * capture function
          * {%capture name=xxx assign=xxx append=xxx%}
+         *
          * @param  {Object} node    ast node
          * @return {string}         render result
          */
-        _getCapture: function (node) {
-            var me = this;
-            var ret = '';
-            var attrs = node.attrs;
-            var block = node.block;
-            var name = '';
-            var assign = '';
-            var append = '';
-            var ca = '__ca' + utils.getGUID();
+        _getCapture(node) {
+            let me = this;
+            let ret = '';
+            let attrs = node.attrs;
+            let block = node.block;
+            let name = '';
+            let assign = '';
+            let append = '';
+            let ca = '__ca' + utils.getGUID();
 
             if (attrs) {
-                ret += 'var ' + ca + 'a=function(){var ' + ca + '="";'
+                ret += 'let ' + ca + 'a=function(){let ' + ca + '="";'
                     + me._init(block).replace(/__h/g, ca)
                     + 'return ' + ca + ';};';
-                attrs.forEach(function (attr) {
-                    var key = attr.key.value;
-                    var valObj = attr.value;
+                attrs.forEach(attr => {
+                    let key = attr.key.value;
+                    let valObj = attr.value;
                     if (key === 'name' || !valObj) {
                         name = valObj ? valObj.value : key;
                     }
@@ -318,7 +328,7 @@ module.exports = function (Renderer) {
                 ret += '__cap["' + assign + '"]=function(){return ' + ca + 'a();}';
             }
             if (append) {
-                var f = me.capAssign[append];
+                let f = me.capAssign[append];
                 if (f) {
                     ret += '__da.' + append + '["__a' + f + '"]=' + ca + 'a;';
                     me.capAssign[append]++;
@@ -332,4 +342,4 @@ module.exports = function (Renderer) {
             return ret;
         }
     });
-};
+}

@@ -1,20 +1,30 @@
 /**
  * @file Renderer of Smarty4Js
- * @author johnson [zoumiaojiang@gmail.com]
+ * @author mj(zoumiaojiang@gmail.com)
  */
 
-var utils = require('../utils');
+import utils from '../utils';
+import Smarty from '../index';
+
+import assignRender from './assign';
+import exprRender from './expr';
+import funcRender from './function';
+import ifRender from './if';
+import loopRender from './loop';
+import moduleRender from './module';
+import literalRender from './Literal';
 
 /**
  * add php functions after generate jsCode
+ *
  * @param  {Object} engine  engine
  * @param  {string} jsTpl   js code generate by engine
  * @return {string}         result code
  */
 function addPhpFuncs(engine, jsTpl) {
-    var arr = [];
-    var obj = {};
-    var matches = jsTpl.match(/__f\[\".+?\"\]\(/g);
+    let arr = [];
+    let obj = {};
+    let matches = jsTpl.match(/__f\[\".+?\"\]\(/g);
     if (matches) {
         matches.forEach(
             function (item) {
@@ -33,14 +43,15 @@ function addPhpFuncs(engine, jsTpl) {
 
 /**
  * add smarty-tag functions after generate jsCode
+ *
  * @param  {Object} engine  engine
  * @param  {string} jsTpl   js code generate by engine
  * @return {string}         result code
  */
 function addUserDefinedFuncs(engine, jsTpl) {
-    var arr = [];
-    var obj = {};
-    var matches = jsTpl.match(/"__fn__.+?"/g);
+    let arr = [];
+    let obj = {};
+    let matches = jsTpl.match(/"__fn__.+?"/g);
     if (matches) {
         matches.forEach(
             function (item) {
@@ -59,11 +70,12 @@ function addUserDefinedFuncs(engine, jsTpl) {
 
 /**
  * add a closure after generate jsCode
+ *
  * @param  {string} jsTpl   js code generate by engine
  * @return {string}         result code
  */
 function addClosure(jsTpl) {
-    var conf = this.conf;
+    let conf = this.conf;
     return ''
         + '(function(root){'
         +     'var __ret={'
@@ -72,10 +84,10 @@ function addClosure(jsTpl) {
         +             'if(typeof __tn=="string"){__da=__da||{};}' + jsTpl
         +         '}'
         +     '};\n'
-        +     (conf.isCmd 
+        +     (conf.isCmd
                     ? 'if (typeof exports=="object" && typeof module=="object"){exports=module.exports=__ret;}\n'
                     : '')
-        +     (conf.isAmd 
+        +     (conf.isAmd
                     ? 'if (typeof define=="function" && define.amd){define(__ret);}\n'
                     : '')
         +     'root.' + (conf.globalVar || '_smartyTpl') + '=__ret;\n'
@@ -84,16 +96,22 @@ function addClosure(jsTpl) {
 }
 
 /**
- * @constructor
+ * render class
+ *
+ * @class
+ *
  * @param {Object} engine current engine
  */
-function Renderer(engine) {
-    this.ctxId = utils.getGUID();
-    this.engine = engine;
-    this.eClass = require('../../index');
-    this.conf = engine.conf;
-    this.includeAssign = {};
-    this.capAssign = {};
+export default class Renderer {
+
+    constructor(engine) {
+        this.ctxId = utils.getGUID();
+        this.engine = engine;
+        this.eClass = Smarty;
+        this.conf = engine.conf;
+        this.includeAssign = {};
+        this.capAssign = {};
+    }
 }
 
 /**
@@ -111,13 +129,14 @@ Renderer.prototype = {
 
     /**
      * parser of Renderer
+     *
      * @param  {number} flag  flag of env (1,2...: addclosure, 0: just logic template)
      * @return {string}        generate js template
      */
-    parser: function (flag) {
-        var me = this;
-        var ast = me.engine.ast;
-        var jsTpl = '';
+    parser(flag) {
+        let me = this;
+        let ast = me.engine.ast;
+        let jsTpl = '';
         if (!flag) {
             jsTpl += '\nvar __h="",__cap={},__ext={},__assign,__sec={},__for={},smarty={'
                 + 'foreach:{},capture:{},'
@@ -146,21 +165,22 @@ Renderer.prototype = {
 
     /**
      * enter of render
+     *
      * @param  {Object} root          ast tree
      * @param  {number|boolean} flag  env flag(2: tag in string, other: normal)
      * @return {string}               js template
      */
-    _init: function (root, flag) {
+    _init(root, flag) {
 
-        var me = this;
-        var ret = '';
-        var n0 = root[0];
-        var n1 = root[1];
+        let me = this;
+        let ret = '';
+        let n0 = root[0];
+        let n1 = root[1];
 
         if (flag === 2) { // smarty tags in string
-            var tmpRet = [];
+            let tmpRet = [];
             root.forEach(function (node, index) {
-                var type = node.type;
+                let type = node.type;
                 switch (type) {
                     case 'T':
                         tmpRet.push(me._getText(node));
@@ -189,11 +209,11 @@ Renderer.prototype = {
             && n1.type === 'FUNC'
             && n1.name === 'extends'
         ) { // extends
-            var prefix = '__ext__' + utils.getGUID();
+            let prefix = '__ext__' + utils.getGUID();
             me.extScope.push(prefix);
             ret += me._getExtends(n1);
             root.forEach(function (node) {
-                var type = node.type;
+                let type = node.type;
                 switch (type) { // if extends, just deal with block stmts
                     case 'FUNC':
                         if (node.name === 'block') {
@@ -209,7 +229,7 @@ Renderer.prototype = {
         }
         else { // normal smarty tags
             root.forEach(function (node) {
-                var type = node.type;
+                let type = node.type;
                 switch (type) {
                     case 'T':
                         ret += utils.p(me._getText(node));
@@ -253,7 +273,7 @@ Renderer.prototype = {
                 }
             });
         }
-        var config = me.engine.conf;
+        let config = me.engine.conf;
         // finanly escape to normal JS code (replace placeholder)
         // __D: .
         // __QD: "
@@ -270,12 +290,12 @@ Renderer.prototype = {
     }
 };
 
-require('./expr')(Renderer);
-require('./literal')(Renderer);
-require('./if')(Renderer);
-require('./loop')(Renderer);
-require('./assign')(Renderer);
-require('./function')(Renderer);
-require('./module')(Renderer);
 
-module.exports = Renderer;
+
+exprRender(Renderer);
+loopRender(Renderer);
+literalRender(Renderer);
+ifRender(Renderer);
+assignRender(Renderer);
+funcRender(Renderer);
+moduleRender(Renderer);
