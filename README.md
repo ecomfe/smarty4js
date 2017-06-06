@@ -79,7 +79,6 @@ Smarty4Js (Smarty For JavaScript)
     var Smarty = require('smarty4Js');
 
     // create a Smarty object
-
     var s = new Smarty();
 
     // if you want to reset smarty config, you can do like this
@@ -91,7 +90,7 @@ Smarty4Js (Smarty For JavaScript)
         'globalVar': '_smartyTpl' // window._smartyTpl is jsTpl object
     });
 
-    // also, you can execute `s.config()` method before do compile
+    // also, you can use `s.config()` method to config smarty before do compile operation
     s.config({
         'left_delimiter': '{%', // default
         'right_delimiter': '%}', // default
